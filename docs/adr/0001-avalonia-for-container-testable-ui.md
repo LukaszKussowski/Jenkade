@@ -1,6 +1,6 @@
-# Avalonia instead of WPF or WinUI 3, so the UI is testable in a Linux container
+# Avalonia instead of WPF or WinUI 3: container-testable and cross-platform UI
 
-Jenkade targets Windows first, but it is developed in a Linux container that cannot run any `.exe` or show a window. We chose Avalonia 12 with the Fluent theme because its headless tests (`Avalonia.Headless.XUnit`) load real XAML, exercise bindings and render screenshots without a display, in the same container where the code is written. Logic and ViewModels live in UI-free `net10.0` libraries.
+Jenkade targets Windows first, but it is developed in a Linux container that cannot run any `.exe` or show a window. We chose Avalonia 12 with the Fluent theme because its headless tests (`Avalonia.Headless.XUnit`) load real XAML, exercise bindings and render screenshots without a display, in the same container where the code is written. Logic and ViewModels live in UI-free `net10.0` libraries. Avalonia is also cross-platform, which keeps Linux and macOS releases open without a rewrite; WPF and WinUI 3 are Windows-only.
 
 ## Considered options
 
