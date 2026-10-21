@@ -15,8 +15,9 @@ obj/
 .gh-token
 .ghtoken
 
-# Local container launch script
+# Local container launch script and image definition
 /claude.cmd
+/Containerfile
 
 # Local probe binaries
 /aot-probe/
