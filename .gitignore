@@ -16,5 +16,4 @@ obj/
 .ghtoken
 
 # Lokalne skrypty uruchomieniowe kontenera
-/run.cmd
-/run.ps1
+/claude.cmd
