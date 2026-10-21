@@ -1,0 +1,19 @@
+<Project>
+  <!-- Eksperyment: Native AOT win-x64 z Linuxa przez lld-link i biblioteki z /opt/xwin -->
+  <PropertyGroup Condition="'$(PublishAot)' == 'true' and $(RuntimeIdentifier.StartsWith('win-'))">
+    <DisableUnsupportedError>true</DisableUnsupportedError>
+    <IlcUseEnvironmentalTools>true</IlcUseEnvironmentalTools>
+    <CppLinker>lld-link</CppLinker>
+  </PropertyGroup>
+  <Target Name="XwinLibPaths" BeforeTargets="LinkNative" Condition="'$(PublishAot)' == 'true' and $(RuntimeIdentifier.StartsWith('win-'))">
+    <PropertyGroup>
+      <CppLinker>lld-link</CppLinker>
+    </PropertyGroup>
+    <ItemGroup>
+      <LinkerArg Remove="@(LinkerArg)" Condition="$([System.String]::Copy('%(Identity)').StartsWith('/SOURCELINK'))" />
+      <LinkerArg Include="/libpath:/opt/xwin/crt/lib/x86_64" />
+      <LinkerArg Include="/libpath:/opt/xwin/sdk/lib/ucrt/x86_64" />
+      <LinkerArg Include="/libpath:/opt/xwin/sdk/lib/um/x86_64" />
+    </ItemGroup>
+  </Target>
+</Project>
