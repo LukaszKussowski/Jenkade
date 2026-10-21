@@ -10,3 +10,6 @@ bin/
 obj/
 .vs/
 *.user
+
+# Token GitHub (tymczasowy)
+.gh-token
