@@ -15,4 +15,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Jenkade.App\Jenkade.App.csproj" />
   </ItemGroup>
+  <!-- The version MinVer computes at build time, to compare with what the About window shows. -->
+  <Target Name="EmbedMinVerVersion" AfterTargets="MinVer">
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>MinVerVersion</_Parameter1>
+        <_Parameter2>$(MinVerVersion)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
 </Project>

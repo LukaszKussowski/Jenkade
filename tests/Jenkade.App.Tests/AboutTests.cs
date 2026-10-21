@@ -1,3 +1,4 @@
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
@@ -23,12 +24,15 @@ public class AboutTests
 
         var aboutWindow = Assert.IsType<AboutWindow>(Assert.Single(mainWindow.OwnedWindows));
         Screenshots.Save(aboutWindow, "about-window");
-        // MinVer: 0.x until the MVP is complete; without a tag it's e.g. 0.1.0-alpha.0.12.
-        Assert.Matches(@"^0\.\d+\.\d+(-[0-9A-Za-z.]+)?$", Find<TextBlock>(aboutWindow, "Version").Text);
+        Assert.Equal(MinVerVersion, Find<TextBlock>(aboutWindow, "Version").Text);
         Assert.Empty(bindingErrors.Messages);
     }
 
-    // Controls are looked up through the logical tree; see the prototype README.
+    private static string MinVerVersion =>
+        typeof(AboutTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "MinVerVersion").Value!;
+
+    // FindControl can't see controls outside the window's name scope ("Could not find parent name scope");
+    // the logical tree finds any control.
     private static T Find<T>(ILogical root, string name) where T : Control =>
         root.GetLogicalDescendants().OfType<T>().Single(control => control.Name == name);
 }
