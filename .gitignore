@@ -1,0 +1,12 @@
+# Wolumeny kontenera (sekrety, historia sesji, cache)
+claude-config/
+nuget-cache/
+.claude/settings.local.json
+
+# Artefakty budowania
+build/
+out/
+bin/
+obj/
+.vs/
+*.user
