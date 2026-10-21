@@ -1,9 +1,9 @@
-# Wolumeny kontenera (sekrety, historia sesji, cache)
+# Container volumes (secrets, session history, caches)
 claude-config/
 nuget-cache/
 .claude/settings.local.json
 
-# Artefakty budowania
+# Build artifacts
 build/
 out/
 bin/
@@ -11,9 +11,12 @@ obj/
 .vs/
 *.user
 
-# Token GitHub (tymczasowy)
+# GitHub token (temporary)
 .gh-token
 .ghtoken
 
-# Lokalne skrypty uruchomieniowe kontenera
+# Local container launch script
 /claude.cmd
+
+# Local probe binaries
+/aot-probe/
