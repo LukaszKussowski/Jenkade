@@ -5,4 +5,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Jenkade.Core\Jenkade.Core.csproj" />
   </ItemGroup>
+  <!-- UI text: English neutral resources, Polish in the satellite assembly. The public Strings class is generated
+       at build time (no checked-in Designer.cs) so the App's XAML can bind to it with x:Static. -->
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx"
+                      StronglyTypedLanguage="CSharp"
+                      StronglyTypedClassName="Strings"
+                      StronglyTypedNamespace="Jenkade.Presentation"
+                      StronglyTypedFileName="$(IntermediateOutputPath)Strings.g.cs"
+                      PublicClass="true" />
+  </ItemGroup>
 </Project>

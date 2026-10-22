@@ -18,3 +18,4 @@ To upgrade Avalonia, check which xUnit version the new `Avalonia.Headless.XUnit`
 
 - `BindingErrorLog.Capture()` installs an Avalonia log sink that collects binding warnings and errors; assert `Messages` is empty.
 - `Screenshots.Save(window, name)` writes `screenshots/{name}.png` next to the test binaries. CI uploads them as the `screenshots` artifact.
+- `new LanguageScope("pl")` switches the UI language for one test and restores it on dispose; views read their text from `Strings` when they load, so create the window inside the scope.
