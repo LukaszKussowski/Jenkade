@@ -1,0 +1,35 @@
+name: Conventions
+
+on:
+  pull_request:
+    branches: [main]
+    # edited: re-check when only the PR description changes
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: No Claude attribution in commits or the PR description
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          pattern='Co-Authored-By: Claude|Generated with \[?Claude Code'
+          if git log --format=%B "$BASE..$HEAD" | grep -i -E "$pattern"; then
+            echo "::error::A commit message carries Claude attribution"; exit 1
+          fi
+          if printf '%s' "$PR_BODY" | grep -i -E "$pattern"; then
+            echo "::error::The PR description carries Claude attribution"; exit 1
+          fi
+
+      - name: Polish text only in Polish resources and the glossary
+        run: python3 scripts/check-polish-text.py
