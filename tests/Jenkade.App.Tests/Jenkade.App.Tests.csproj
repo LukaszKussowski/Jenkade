@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- Headless Avalonia in the Linux container: see ADR 0001 for why each piece is here. -->
+  <!-- Headless Avalonia in the Linux container: docs/headless-testing.md maps each piece to the failure it fixes. -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>

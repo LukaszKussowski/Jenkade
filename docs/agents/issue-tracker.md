@@ -2,6 +2,8 @@
 
 Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
 
+The token in `GH_TOKEN` is a fine-grained PAT for this repository with **Read and write** on Contents, Issues, Pull requests and Workflows. A push touching `.github/workflows/` is rejected with "refusing to allow a Personal Access Token to create or update workflow" when Workflows is missing.
+
 ## Conventions
 
 - **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.

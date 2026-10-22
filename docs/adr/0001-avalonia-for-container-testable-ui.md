@@ -11,4 +11,4 @@ Jenkade targets Windows first, but it is developed in a Linux container that can
 
 - Headless tests are not Windows: they won't catch platform-specific issues such as DPI handling or shell integration.
 - Credential storage sits behind an interface: Windows Credential Manager now, other OS equivalents later.
-- Headless testing in the container requires: xUnit v3 at the version `Avalonia.Headless.XUnit` was built against, Microsoft.Testing.Platform enabled in `global.json`, dependency-free native Skia (`SkiaSharp.NativeAssets.Linux.NoDependencies`, with the regular package excluded), and a bundled font (`Avalonia.Fonts.Inter`) set as the default font family.
+- Headless testing in the container requires: xUnit v3 at the version `Avalonia.Headless.XUnit` was built against, Microsoft.Testing.Platform enabled in `global.json`, dependency-free native Skia (`SkiaSharp.NativeAssets.Linux.NoDependencies`, with the regular package excluded), and a bundled font (`Avalonia.Fonts.Inter`) set as the default font family. `docs/headless-testing.md` maps each piece to the failure it fixes.
