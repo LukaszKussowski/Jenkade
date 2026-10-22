@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Jenkade.Presentation;
 
-/// <summary>The language of Jenkade's UI text, which also formats dates, times and durations.</summary>
+/// <summary>The language of Jenkade's UI text; dates and times keep the Windows regional format (ADR 0004).</summary>
 public static class UiLanguage
 {
     public static CultureInfo English { get; } = CultureInfo.GetCultureInfo("en");
@@ -13,12 +13,10 @@ public static class UiLanguage
     public static CultureInfo FromOperatingSystem(CultureInfo osUiCulture) =>
         osUiCulture.TwoLetterISOLanguageName == Polish.TwoLetterISOLanguageName ? Polish : English;
 
-    /// <summary>Makes <paramref name="language"/> the UI and formatting culture of every thread; call once at startup.</summary>
+    /// <summary>Makes <paramref name="language"/> the UI culture of every thread; call once at startup.</summary>
     public static void Apply(CultureInfo language)
     {
         CultureInfo.DefaultThreadCurrentUICulture = language;
-        CultureInfo.DefaultThreadCurrentCulture = language;
         CultureInfo.CurrentUICulture = language;
-        CultureInfo.CurrentCulture = language;
     }
 }

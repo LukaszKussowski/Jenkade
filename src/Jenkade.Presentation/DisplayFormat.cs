@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Jenkade.Presentation;
 
-/// <summary>Formats dates, times and durations in the current <see cref="UiLanguage"/>.</summary>
+/// <summary>Dates, times and numbers in the regional format, duration units in the <see cref="UiLanguage"/> (ADR 0004).</summary>
 public static class DisplayFormat
 {
     /// <summary>Short date and time, e.g. <c>22.10.2026 14:05</c> in Polish.</summary>

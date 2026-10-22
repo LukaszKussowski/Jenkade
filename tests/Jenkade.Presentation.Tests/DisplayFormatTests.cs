@@ -23,6 +23,15 @@ public class DisplayFormatTests
         Assert.Matches(@"^10/22/2026 2:05\sPM$", DisplayFormat.Timestamp(BuildStart));
     }
 
+    [Fact]
+    public void Shows_dates_in_the_regional_format_and_duration_units_in_the_UI_language()
+    {
+        using var _ = new LanguageScope("pl", regionalFormat: "en-GB");
+
+        Assert.Equal("22/10/2026 14:05", DisplayFormat.Timestamp(BuildStart));
+        Assert.Equal("2 godz. 15 min", DisplayFormat.Duration(new TimeSpan(2, 15, 0)));
+    }
+
     [Theory]
     [InlineData("en", 0, 0, 0.4, "0 s")]
     [InlineData("en", 0, 0, 42, "42 s")]
@@ -46,8 +55,11 @@ public class DisplayFormatTests
         private readonly CultureInfo culture = CultureInfo.CurrentCulture;
         private readonly CultureInfo uiCulture = CultureInfo.CurrentUICulture;
 
-        public LanguageScope(string language) =>
-            CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+        public LanguageScope(string uiLanguage, string? regionalFormat = null)
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(uiLanguage);
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(regionalFormat ?? uiLanguage);
+        }
 
         public void Dispose()
         {
