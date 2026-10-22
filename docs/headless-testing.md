@@ -10,6 +10,7 @@
 | `SkiaSharp.NativeAssets.Linux.NoDependencies` + `SkiaSharp.NativeAssets.Linux` with `ExcludeAssets="all"` | `libfontconfig.so.1: cannot open shared object file` |
 | `Avalonia.Fonts.Inter` + `.WithInterFont()` + `FontManagerOptions { DefaultFamilyName = "fonts:Inter#Inter" }` in `TestAppBuilder` | `Default font family name can't be null or empty` (the container has no system fonts) |
 | Controls found through the logical tree, not `FindControl` | `Could not find parent name scope` for controls outside the window's name scope |
+| Container builds output to `artifacts/container/` (`Directory.Build.props`), apart from Visual Studio's `bin/`/`obj/` on the shared Windows checkout | `No test projects were found` (VS restored `obj/` with Windows package paths), or `MSB3026 ... Access to the path ... is denied` (VS holds the binaries) |
 | `frame.Save(path, new PngBitmapEncoderOptions())` | `CS0618: 'Bitmap.Save(string, int?)' is obsolete` (fails the build: warnings are errors) |
 
 To upgrade Avalonia, check which xUnit version the new `Avalonia.Headless.XUnit` depends on (its `.nuspec` on nuget.org) and move `xunit.v3.mtp-v2` to exactly that version.
@@ -17,5 +18,5 @@ To upgrade Avalonia, check which xUnit version the new `Avalonia.Headless.XUnit`
 ## Test helpers
 
 - `BindingErrorLog.Capture()` installs an Avalonia log sink that collects binding warnings and errors; assert `Messages` is empty.
-- `Screenshots.Save(window, name)` writes `screenshots/{name}.png` next to the test binaries. CI uploads them as the `screenshots` artifact.
+- `Screenshots.Save(window, name)` writes `screenshots/{name}.png` next to the test binaries (in the container under `artifacts/container/bin/Jenkade.App.Tests/`). CI uploads them as the `screenshots` artifact.
 - `new LanguageScope("pl")` switches the UI language for one test and restores it on dispose; views read their text from `Strings` when they load, so create the window inside the scope.

@@ -3,7 +3,8 @@ claude-config/
 nuget-cache/
 .claude/settings.local.json
 
-# Build artifacts
+# Build artifacts (artifacts/container: dev container builds, see Directory.Build.props)
+artifacts/
 build/
 out/
 bin/

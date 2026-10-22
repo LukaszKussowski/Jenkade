@@ -19,14 +19,8 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Test
-        run: dotnet test --no-build --configuration Release
+      - name: Build, test and check Polish text
+        run: scripts/check.sh
 
       - name: Upload UI screenshots
         if: always()

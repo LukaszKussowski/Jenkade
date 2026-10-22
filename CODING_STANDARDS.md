@@ -11,7 +11,7 @@ Judgement rules a reviewer applies to every change. Rules a tool can check live 
 
 ## Domain language
 
-Types, members, test names and UI text use the terms in `GLOSSARY.md`; its _Avoid_ words don't name domain concepts. Polish UI wording follows the glossary's _Polish UI_ entries. Data from Jenkins (Job names, Build parameters, Console log, server messages) is shown as Jenkins provides it, never translated.
+Types, members, test names and UI text use the terms in `GLOSSARY.md`; its _Avoid_ words don't name domain concepts. Polish UI wording follows the glossary's _Polish UI_ entries. UI text lives in `src/Jenkade.Presentation/Strings.resx` (English) and `Strings.pl.resx`; the product name Jenkade stays untranslated, as a literal. Data from Jenkins (Job names, Build parameters, Console log, server messages) is shown as Jenkins provides it, never translated.
 
 ## Tests
 
@@ -34,4 +34,6 @@ Polling and timeouts take the injected `TimeProvider` (e.g. `PeriodicTimer` on i
 
 - All warnings as errors, including trimming/AOT analyzers and Avalonia's XAML compiler (AVLN): `Directory.Build.props`.
 - Polish text only in `*.pl.resx` and `GLOSSARY.md`: `scripts/check-polish-text.py`.
+- Every UI string in both languages, none using a glossary _Avoid_ or "not …" term: `StringsTests`.
+- All of the above in one run: `scripts/check.sh` (CI runs it too).
 - No Claude attribution in commits or PR descriptions: `.github/workflows/conventions.yml`.
