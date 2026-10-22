@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Jenkade.App/Jenkade.App.csproj" />
+    <Project Path="src/Jenkade.Core/Jenkade.Core.csproj" />
+    <Project Path="src/Jenkade.Presentation/Jenkade.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Jenkade.App.Tests/Jenkade.App.Tests.csproj" />
+    <Project Path="tests/Jenkade.Core.Tests/Jenkade.Core.Tests.csproj" />
+    <Project Path="tests/Jenkade.Presentation.Tests/Jenkade.Presentation.Tests.csproj" />
+  </Folder>
+</Solution>

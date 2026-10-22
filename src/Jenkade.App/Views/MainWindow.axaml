@@ -1,0 +1,16 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Jenkade.Presentation"
+        x:Class="Jenkade.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Jenkade"
+        Width="1000" Height="700">
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_Help">
+        <MenuItem Name="AboutMenuItem" Header="_About Jenkade" Command="{Binding ShowAboutCommand}" />
+      </MenuItem>
+    </Menu>
+    <Panel />
+  </DockPanel>
+</Window>

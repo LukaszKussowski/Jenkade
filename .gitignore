@@ -21,3 +21,6 @@ obj/
 
 # Local probe binaries
 /aot-probe/
+
+# Test results
+TestResults/
