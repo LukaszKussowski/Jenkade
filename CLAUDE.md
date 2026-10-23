@@ -1,5 +1,9 @@
 # Jenkade
 
+## Checks
+
+`scripts/check.sh` runs every check CI runs on a PR: Release build, all tests, Polish-text placement.
+
 ## Agent skills
 
 ### Issue tracker

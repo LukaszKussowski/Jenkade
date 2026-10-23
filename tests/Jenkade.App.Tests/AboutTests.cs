@@ -11,9 +11,12 @@ namespace Jenkade.App.Tests;
 
 public class AboutTests
 {
-    [AvaloniaFact]
-    public void About_window_shows_the_version_from_git_tags()
+    [AvaloniaTheory]
+    [InlineData("en")]
+    [InlineData("pl")]
+    public void About_window_shows_the_version_from_git_tags(string language)
     {
+        using var _ = new LanguageScope(language);
         using var bindingErrors = BindingErrorLog.Capture();
         using var host = CompositionRoot.CreateHost();
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
@@ -23,7 +26,7 @@ public class AboutTests
         Dispatcher.UIThread.RunJobs();
 
         var aboutWindow = Assert.IsType<AboutWindow>(Assert.Single(mainWindow.OwnedWindows));
-        Screenshots.Save(aboutWindow, "about-window");
+        Screenshots.Save(aboutWindow, $"about-window-{language}");
         Assert.Equal(MinVerVersion, Find<TextBlock>(aboutWindow, "Version").Text);
         Assert.Empty(bindingErrors.Messages);
     }

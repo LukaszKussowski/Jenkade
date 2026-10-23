@@ -11,6 +11,14 @@
     <MSBuildWarningsNotAsErrors>$(MSBuildWarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</MSBuildWarningsNotAsErrors>
   </PropertyGroup>
 
+  <!-- The dev container mounts the same checkout Visual Studio uses on Windows. Separate bin/obj keep the two from
+       overwriting each other's restore output (Windows package paths break the container's test discovery:
+       "No test projects were found") and from locking each other's binaries ("MSB3026 Access ... denied"). -->
+  <PropertyGroup Condition="'$(DOTNET_RUNNING_IN_CONTAINER)' == 'true'">
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts/container</ArtifactsPath>
+  </PropertyGroup>
+
   <!-- ADR 0002: shipped code is Native AOT compatible from day one; trimming/AOT analyzer warnings fail the build. -->
   <PropertyGroup Condition="!$(MSBuildProjectName.EndsWith('.Tests'))">
     <IsAotCompatible>true</IsAotCompatible>

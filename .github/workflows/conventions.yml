@@ -30,6 +30,3 @@ jobs:
           if printf '%s' "$PR_BODY" | grep -i -E "$pattern"; then
             echo "::error::The PR description carries Claude attribution"; exit 1
           fi
-
-      - name: Polish text only in Polish resources and the glossary
-        run: python3 scripts/check-polish-text.py
