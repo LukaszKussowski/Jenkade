@@ -13,6 +13,8 @@
 | Container builds output to `artifacts/container/` (`Directory.Build.props`), apart from Visual Studio's `bin/`/`obj/` on the shared Windows checkout | `No test projects were found` (VS restored `obj/` with Windows package paths), or `MSB3026 ... Access to the path ... is denied` (VS holds the binaries) |
 | `frame.Save(path, new PngBitmapEncoderOptions())` | `CS0618: 'Bitmap.Save(string, int?)' is obsolete` (fails the build: warnings are errors) |
 
+When `dotnet test` finds no tests, run it with `DOTNET_CLI_TEST_TRACEFILE=<file>`: the trace shows whether each project loaded as a test project (`IsTestingPlatformApplication`).
+
 To upgrade Avalonia, check which xUnit version the new `Avalonia.Headless.XUnit` depends on (its `.nuspec` on nuget.org) and move `xunit.v3.mtp-v2` to exactly that version.
 
 ## Test helpers

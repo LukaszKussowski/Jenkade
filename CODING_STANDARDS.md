@@ -11,7 +11,7 @@ Judgement rules a reviewer applies to every change. Rules a tool can check live 
 
 ## Domain language
 
-Types, members, test names and UI text use the terms in `GLOSSARY.md`; its _Avoid_ words don't name domain concepts. Polish UI wording follows the glossary's _Polish UI_ entries. UI text lives in `src/Jenkade.Presentation/Strings.resx` (English) and `Strings.pl.resx`; the product name Jenkade stays untranslated, as a literal. Data from Jenkins (Job names, Build parameters, Console log, server messages) is shown as Jenkins provides it, never translated.
+Types, members, test names and UI text use the terms in `GLOSSARY.md`; its _Avoid_ words don't name domain concepts. Polish UI wording follows the glossary's _Polish UI_ entries. UI text lives in `src/Jenkade.Presentation/Strings.resx` (English) and `Strings.pl.resx`; the product name Jenkade stays untranslated, as a literal. Dates, times and durations shown to the user go through `DisplayFormat` (ADR 0004). Data from Jenkins (Job names, Build parameters, Console log, server messages) is shown as Jenkins provides it, never translated.
 
 ## Tests
 

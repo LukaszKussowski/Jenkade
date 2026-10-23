@@ -20,7 +20,7 @@ jobs:
           global-json-file: global.json
 
       - name: Build, test and check Polish text
-        run: scripts/check.sh
+        run: bash scripts/check.sh # core.fileMode is off on the Windows checkout, so the executable bit may be missing
 
       - name: Upload UI screenshots
         if: always()
