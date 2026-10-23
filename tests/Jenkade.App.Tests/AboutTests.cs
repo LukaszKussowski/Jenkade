@@ -18,7 +18,8 @@ public class AboutTests
     {
         using var _ = new LanguageScope(language);
         using var bindingErrors = BindingErrorLog.Capture();
-        using var host = CompositionRoot.CreateHost();
+        using var app = new TestSeams();
+        using var host = app.CreateHost();
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
 

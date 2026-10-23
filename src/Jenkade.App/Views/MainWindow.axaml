@@ -1,16 +1,37 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Jenkade.Presentation"
+        xmlns:core="using:Jenkade.Core"
         x:Class="Jenkade.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Jenkade"
         Width="1000" Height="700">
   <DockPanel>
     <Menu DockPanel.Dock="Top">
+      <MenuItem Name="ConnectionMenuItem" Header="{x:Static vm:Strings.MenuConnection}">
+        <MenuItem Name="AddConnectionMenuItem" Header="{x:Static vm:Strings.MenuAddConnection}" Command="{Binding AddConnectionCommand}" />
+      </MenuItem>
       <MenuItem Name="HelpMenuItem" Header="{x:Static vm:Strings.MenuHelp}">
         <MenuItem Name="AboutMenuItem" Header="{x:Static vm:Strings.MenuAbout}" Command="{Binding ShowAboutCommand}" />
       </MenuItem>
     </Menu>
+    <Border DockPanel.Dock="Left" Width="280" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+      <Panel>
+        <TextBlock Text="{x:Static vm:Strings.NoConnections}" Margin="16" TextWrapping="Wrap"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   IsVisible="{Binding !Connections.Count}" />
+        <ListBox Name="Connections" ItemsSource="{Binding Connections}" Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="core:Connection">
+              <StackPanel Spacing="2">
+                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding Address}" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Panel>
+    </Border>
     <Panel />
   </DockPanel>
 </Window>

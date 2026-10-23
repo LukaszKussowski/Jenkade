@@ -19,6 +19,7 @@ To upgrade Avalonia, check which xUnit version the new `Avalonia.Headless.XUnit`
 
 ## Test helpers
 
+- `TestSeams` creates the application host with only the platform seams replaced: `FakeJenkins` (from `tests/Jenkade.Testing`, shared by every test level), an in-memory credential store and a temporary settings folder. Hosts created from one `TestSeams` share them, so creating a second host simulates a restart.
 - `BindingErrorLog.Capture()` installs an Avalonia log sink that collects binding warnings and errors; assert `Messages` is empty.
 - `Screenshots.Save(window, name)` writes `screenshots/{name}.png` next to the test binaries (in the container under `artifacts/container/bin/Jenkade.App.Tests/`). CI uploads them as the `screenshots` artifact.
 - `new LanguageScope("pl")` switches the UI language for one test and restores it on dispose; views read their text from `Strings` when they load, so create the window inside the scope.

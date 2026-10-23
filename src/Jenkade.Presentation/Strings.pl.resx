@@ -39,4 +39,58 @@
   <data name="DurationHoursMinutes" xml:space="preserve">
     <value>{0} godz. {1} min</value>
   </data>
+  <data name="VerificationInvalidCredentials" xml:space="preserve">
+    <value>Jenkins odrzucił nazwę użytkownika lub token API.</value>
+  </data>
+  <data name="VerificationNoPermission" xml:space="preserve">
+    <value>Użytkownik nie ma uprawnień do odczytu Jenkinsa (Overall/Read).</value>
+  </data>
+  <data name="VerificationUnreachable" xml:space="preserve">
+    <value>Pod tym adresem nic nie odpowiada. Sprawdź adres i dostęp do sieci.</value>
+  </data>
+  <data name="VerificationUntrustedCertificate" xml:space="preserve">
+    <value>System operacyjny nie ufa certyfikatowi tego adresu. Dodaj jego urząd certyfikacji do magazynu certyfikatów systemu.</value>
+  </data>
+  <data name="VerificationNotJenkins" xml:space="preserve">
+    <value>Pod tym adresem nie ma Jenkinsa.</value>
+  </data>
+  <data name="VerificationUnexpectedResponse" xml:space="preserve">
+    <value>Jenkins odpowiedział błędem. Spróbuj ponownie później.</value>
+  </data>
+  <data name="InvalidAddress" xml:space="preserve">
+    <value>Podaj pełny adres zaczynający się od https:// lub http://.</value>
+  </data>
+  <data name="MenuConnection" xml:space="preserve">
+    <value>_Połączenie</value>
+  </data>
+  <data name="MenuAddConnection" xml:space="preserve">
+    <value>_Dodaj połączenie…</value>
+  </data>
+  <data name="NoConnections" xml:space="preserve">
+    <value>Brak połączeń. Dodaj połączenie z menu Połączenie.</value>
+  </data>
+  <data name="AddConnectionTitle" xml:space="preserve">
+    <value>Dodaj połączenie</value>
+  </data>
+  <data name="ConnectionDisplayName" xml:space="preserve">
+    <value>Nazwa wyświetlana</value>
+  </data>
+  <data name="ConnectionAddress" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+  <data name="ConnectionUserName" xml:space="preserve">
+    <value>Nazwa użytkownika</value>
+  </data>
+  <data name="ConnectionApiToken" xml:space="preserve">
+    <value>Token API</value>
+  </data>
+  <data name="Verifying" xml:space="preserve">
+    <value>Weryfikowanie…</value>
+  </data>
+  <data name="VerifyAndSave" xml:space="preserve">
+    <value>Zweryfikuj i zapisz</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
 </root>

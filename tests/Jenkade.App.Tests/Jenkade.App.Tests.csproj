@@ -14,6 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Jenkade.App\Jenkade.App.csproj" />
+    <ProjectReference Include="..\Jenkade.Testing\Jenkade.Testing.csproj" />
   </ItemGroup>
   <!-- The version MinVer computes at build time, to compare with what the About window shows. -->
   <Target Name="EmbedMinVerVersion" AfterTargets="MinVer">

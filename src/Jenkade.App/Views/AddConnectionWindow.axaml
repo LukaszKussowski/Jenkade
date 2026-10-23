@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Jenkade.Presentation"
+        x:Class="Jenkade.App.Views.AddConnectionWindow"
+        x:DataType="vm:AddConnectionViewModel"
+        Title="{x:Static vm:Strings.AddConnectionTitle}"
+        SizeToContent="Height"
+        Width="460"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="24" Spacing="12">
+    <StackPanel Spacing="4">
+      <Label Content="{x:Static vm:Strings.ConnectionDisplayName}" Target="DisplayName" />
+      <TextBox Name="DisplayName" Text="{Binding DisplayName}" />
+    </StackPanel>
+    <StackPanel Spacing="4">
+      <Label Content="{x:Static vm:Strings.ConnectionAddress}" Target="Address" />
+      <TextBox Name="Address" Text="{Binding Address}" PlaceholderText="https://jenkins.example.com" />
+    </StackPanel>
+    <StackPanel Spacing="4">
+      <Label Content="{x:Static vm:Strings.ConnectionUserName}" Target="UserName" />
+      <TextBox Name="UserName" Text="{Binding UserName}" />
+    </StackPanel>
+    <StackPanel Spacing="4">
+      <Label Content="{x:Static vm:Strings.ConnectionApiToken}" Target="ApiToken" />
+      <TextBox Name="ApiToken" Text="{Binding ApiToken}" PasswordChar="•" />
+    </StackPanel>
+    <TextBlock Name="Error" Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}"
+               TextWrapping="Wrap" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0">
+      <TextBlock Text="{x:Static vm:Strings.Verifying}" VerticalAlignment="Center" IsVisible="{Binding SaveCommand.IsRunning}"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      <Button Name="Save" Content="{x:Static vm:Strings.VerifyAndSave}" Command="{Binding SaveCommand}" IsDefault="True"
+              Classes="accent" />
+      <Button Content="{x:Static vm:Strings.Close}" IsCancel="True" Click="Close_Click" />
+    </StackPanel>
+  </StackPanel>
+</Window>
