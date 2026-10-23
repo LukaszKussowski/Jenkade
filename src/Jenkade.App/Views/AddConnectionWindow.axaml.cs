@@ -13,6 +13,7 @@ public partial class AddConnectionWindow : Window
     {
         DataContext = viewModel;
         viewModel.Saved += (_, connection) => Close(connection);
+        Closing += (_, _) => viewModel.Close();
     }
 
     private void Close_Click(object? sender, RoutedEventArgs e) => Close();

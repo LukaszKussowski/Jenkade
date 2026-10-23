@@ -93,4 +93,7 @@
   <data name="Close" xml:space="preserve">
     <value>Zamknij</value>
   </data>
+  <data name="VerificationRedirected" xml:space="preserve">
+    <value>Ten adres przekierowuje gdzie indziej. Podaj adres, pod którym działa Jenkins, np. z https://.</value>
+  </data>
 </root>

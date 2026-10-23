@@ -64,6 +64,16 @@ public class ConnectionVerificationTests
         Assert.Equal(ConnectionVerification.NotJenkins, await Verify());
     }
 
+    // Following a redirect would drop the Authorization header and verify anonymous access instead.
+    [Fact]
+    public async Task Reports_a_redirect_instead_of_following_it_without_credentials()
+    {
+        jenkins.Serve("api/json", "redirect-to-https.http");
+
+        Assert.Equal(ConnectionVerification.Redirected, await Verify());
+        Assert.Single(jenkins.Requests);
+    }
+
     [Fact]
     public async Task Reports_an_unexpected_response_when_Jenkins_fails_otherwise()
     {

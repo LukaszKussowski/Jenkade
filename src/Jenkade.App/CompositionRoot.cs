@@ -18,7 +18,8 @@ public static class CompositionRoot
 
         builder.Services.AddSingleton(ApplicationVersion.FromAssembly(typeof(CompositionRoot).Assembly));
         // No certificate validation callback: TLS trust is the operating system's (no way to ignore certificate errors).
-        builder.Services.AddSingleton<HttpMessageHandler>(_ => new SocketsHttpHandler());
+        // No redirects: following one drops the Authorization header, so Jenkins would see an anonymous request.
+        builder.Services.AddSingleton<HttpMessageHandler>(_ => new SocketsHttpHandler { AllowAutoRedirect = false });
         builder.Services.AddSingleton<ICredentialStore>(_ => OperatingSystem.IsWindows()
             ? new WindowsCredentialManager()
             : throw new PlatformNotSupportedException("Jenkade stores API tokens in the Windows Credential Manager only."));

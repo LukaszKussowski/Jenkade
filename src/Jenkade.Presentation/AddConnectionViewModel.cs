@@ -29,6 +29,9 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
 
     public event EventHandler<Connection>? Saved;
 
+    /// <summary>The user closed the form: a verification still waiting for Jenkins saves nothing.</summary>
+    public void Close() => SaveCommand.Cancel();
+
     private bool CanSave =>
         new[] { DisplayName, Address, UserName, ApiToken }.All(value => !string.IsNullOrWhiteSpace(value));
 
@@ -41,12 +44,22 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
             return;
         }
 
-        var verification = await jenkins.VerifyAsync(address, UserName.Trim(), ApiToken.Trim(), cancellationToken);
+        var (userName, apiToken) = (UserName.Trim(), ApiToken.Trim());
+        ConnectionVerification verification;
+        try
+        {
+            verification = await jenkins.VerifyAsync(address, userName, apiToken, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         Error = Explain(verification);
         if (Error is not null)
             return;
 
-        var connection = connections.Add(DisplayName.Trim(), address, UserName.Trim(), ApiToken.Trim());
+        var connection = connections.Add(DisplayName.Trim(), address, userName, apiToken);
         Saved?.Invoke(this, connection);
     }
 
@@ -58,6 +71,7 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
         ConnectionVerification.Unreachable => Strings.VerificationUnreachable,
         ConnectionVerification.UntrustedCertificate => Strings.VerificationUntrustedCertificate,
         ConnectionVerification.NotJenkins => Strings.VerificationNotJenkins,
+        ConnectionVerification.Redirected => Strings.VerificationRedirected,
         ConnectionVerification.UnexpectedResponse => Strings.VerificationUnexpectedResponse,
         _ => throw new ArgumentOutOfRangeException(nameof(verification), verification, null),
     };

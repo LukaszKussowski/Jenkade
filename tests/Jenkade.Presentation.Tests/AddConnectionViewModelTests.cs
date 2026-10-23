@@ -33,6 +33,23 @@ public sealed class AddConnectionViewModelTests : IDisposable
         Assert.Equal(ApiToken, restarted.ApiToken(connection));
     }
 
+    [Fact]
+    public async Task Saves_nothing_when_the_form_is_closed_while_Jenkins_has_not_answered_yet()
+    {
+        jenkins.NeverRespond();
+        var form = FilledForm();
+        var saved = false;
+        form.Saved += (_, _) => saved = true;
+
+        var saving = form.SaveCommand.ExecuteAsync(null);
+        form.Close();
+        await saving;
+
+        Assert.False(saved);
+        Assert.Null(form.Error);
+        Assert.Empty(new ConnectionStore(settings.Folder, credentials).All());
+    }
+
     [Theory]
     [InlineData(nameof(AddConnectionViewModel.DisplayName))]
     [InlineData(nameof(AddConnectionViewModel.Address))]
@@ -55,6 +72,7 @@ public sealed class AddConnectionViewModelTests : IDisposable
     [InlineData("untrusted-certificate",
         "The operating system doesn't trust this address's certificate. Add its certificate authority to the system certificate store.")]
     [InlineData("not-jenkins", "There's no Jenkins at this address.")]
+    [InlineData("redirect-to-https", "This address redirects elsewhere. Enter the address Jenkins is served at, e.g. with https://.")]
     [InlineData("internal-server-error", "Jenkins answered with an error. Try again later.")]
     public async Task Explains_why_Jenkins_did_not_verify_the_Connection_and_saves_nothing(string jenkinsBehaviour, string expectedError)
     {

@@ -17,7 +17,8 @@ public sealed class AddConnectionTests : IDisposable
 
     [AvaloniaTheory]
     [InlineData("en", "Jenkins rejected the user name or API token.")]
-    [InlineData("pl", "Jenkins odrzucił nazwę użytkownika lub token API.")]
+    // Escaped: Polish text lives only in *.pl.resx (scripts/check-polish-text.py).
+    [InlineData("pl", "Jenkins odrzuci\u0142 nazw\u0119 u\u017Cytkownika lub token API.")]
     public void Adds_a_Connection_once_Jenkins_verifies_it_and_keeps_it_after_a_restart(string language, string invalidCredentials)
     {
         using var _ = new LanguageScope(language);

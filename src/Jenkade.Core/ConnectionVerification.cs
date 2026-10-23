@@ -20,6 +20,9 @@ public enum ConnectionVerification
     /// <summary>Something answered, but not Jenkins' API: another web server, or a path below Jenkins' root.</summary>
     NotJenkins,
 
+    /// <summary>The address redirects elsewhere, e.g. from http to https; Jenkade doesn't follow it.</summary>
+    Redirected,
+
     /// <summary>Jenkins answered with another error, e.g. HTTP 500 or a proxy's 502.</summary>
     UnexpectedResponse,
 }

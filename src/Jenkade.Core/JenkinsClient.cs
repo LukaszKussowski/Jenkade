@@ -44,6 +44,7 @@ public sealed class JenkinsClient(HttpMessageHandler handler, TimeProvider time)
             HttpStatusCode.Unauthorized => ConnectionVerification.InvalidCredentials,
             HttpStatusCode.Forbidden => ConnectionVerification.NoPermission,
             HttpStatusCode.NotFound => ConnectionVerification.NotJenkins,
+            >= HttpStatusCode.MultipleChoices and < HttpStatusCode.BadRequest => ConnectionVerification.Redirected,
             _ when !response.IsSuccessStatusCode => ConnectionVerification.UnexpectedResponse,
             // Every Jenkins response carries its version in X-Jenkins.
             _ when !response.Headers.Contains("X-Jenkins") => ConnectionVerification.NotJenkins,
