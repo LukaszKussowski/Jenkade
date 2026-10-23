@@ -27,4 +27,16 @@ public class StartupTests
         Assert.Equal(helpMenu, window.GetLogicalDescendants().OfType<MenuItem>().Single(item => item.Name == "HelpMenuItem").Header);
         Assert.Empty(bindingErrors.Messages);
     }
+
+    [AvaloniaFact]
+    public void Main_window_opens_with_the_platforms_own_credential_store()
+    {
+        using var app = new TestSeams();
+        using var host = app.CreateHost(platformCredentialStore: true);
+
+        var window = host.Services.GetRequiredService<MainWindow>();
+        window.Show();
+
+        Assert.True(window.IsVisible);
+    }
 }

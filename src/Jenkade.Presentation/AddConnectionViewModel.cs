@@ -59,7 +59,17 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
         if (Error is not null)
             return;
 
-        var connection = connections.Add(DisplayName.Trim(), address, userName, apiToken);
+        Connection connection;
+        try
+        {
+            connection = connections.Add(DisplayName.Trim(), address, userName, apiToken);
+        }
+        catch (CredentialStoreUnavailableException)
+        {
+            Error = Strings.NoCredentialStore;
+            return;
+        }
+
         Saved?.Invoke(this, connection);
     }
 

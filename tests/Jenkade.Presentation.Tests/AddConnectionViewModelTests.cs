@@ -108,6 +108,23 @@ public sealed class AddConnectionViewModelTests : IDisposable
         Assert.Equal("https://jenkins.example.com/ci/", Assert.Single(new ConnectionStore(settings.Folder, credentials).All()).Address.ToString());
     }
 
+    [Fact]
+    public async Task Explains_that_the_Connection_cannot_be_saved_without_a_credential_store()
+    {
+        CultureInfo.CurrentUICulture = UiLanguage.English;
+        jenkins.Serve("api/json", "root.http");
+        var connections = new ConnectionStore(settings.Folder, new UnavailableCredentialStore());
+        var form = FilledForm(connections);
+        var saved = false;
+        form.Saved += (_, _) => saved = true;
+
+        await form.SaveCommand.ExecuteAsync(null);
+
+        Assert.Equal("This system has no credential store to keep the API token in, so the Connection can't be saved.", form.Error);
+        Assert.False(saved);
+        Assert.Empty(connections.All());
+    }
+
     [Theory]
     [InlineData("jenkins.example.com")]
     [InlineData("ftp://jenkins.example.com/")]
@@ -125,8 +142,10 @@ public sealed class AddConnectionViewModelTests : IDisposable
         Assert.Empty(new ConnectionStore(settings.Folder, credentials).All());
     }
 
-    private AddConnectionViewModel FilledForm() =>
-        new(new JenkinsClient(jenkins, TimeProvider.System), new ConnectionStore(settings.Folder, credentials))
+    private AddConnectionViewModel FilledForm() => FilledForm(new ConnectionStore(settings.Folder, credentials));
+
+    private AddConnectionViewModel FilledForm(ConnectionStore connections) =>
+        new(new JenkinsClient(jenkins, TimeProvider.System), connections)
         {
             DisplayName = "Company Jenkins",
             Address = "https://jenkins.example.com",

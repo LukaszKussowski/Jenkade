@@ -17,10 +17,13 @@ public sealed class TestSeams : IDisposable
 
     public InMemoryCredentialStore Credentials { get; } = new();
 
-    public IHost CreateHost() => CompositionRoot.CreateHost(services => services
-        .AddSingleton<HttpMessageHandler>(Jenkins)
-        .AddSingleton<ICredentialStore>(Credentials)
-        .AddSingleton(settings.Folder));
+    /// <param name="platformCredentialStore">Keeps the platform's own credential store instead of the in-memory one.</param>
+    public IHost CreateHost(bool platformCredentialStore = false) => CompositionRoot.CreateHost(services =>
+    {
+        services.AddSingleton<HttpMessageHandler>(Jenkins).AddSingleton(settings.Folder);
+        if (!platformCredentialStore)
+            services.AddSingleton<ICredentialStore>(Credentials);
+    });
 
     public void Dispose() => settings.Dispose();
 }

@@ -22,7 +22,7 @@ public static class CompositionRoot
         builder.Services.AddSingleton<HttpMessageHandler>(_ => new SocketsHttpHandler { AllowAutoRedirect = false });
         builder.Services.AddSingleton<ICredentialStore>(_ => OperatingSystem.IsWindows()
             ? new WindowsCredentialManager()
-            : throw new PlatformNotSupportedException("Jenkade stores API tokens in the Windows Credential Manager only."));
+            : new UnavailableCredentialStore());
         builder.Services.AddSingleton(_ => SettingsFolder.ForCurrentUser());
         builder.Services.AddSingleton(TimeProvider.System);
         replaceSeams?.Invoke(builder.Services);

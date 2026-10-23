@@ -96,4 +96,7 @@
   <data name="VerificationRedirected" xml:space="preserve">
     <value>Ten adres przekierowuje gdzie indziej. Podaj adres, pod którym działa Jenkins, np. z https://.</value>
   </data>
+  <data name="NoCredentialStore" xml:space="preserve">
+    <value>W tym systemie nie ma magazynu poświadczeń, w którym można przechować token API, więc nie da się zapisać połączenia.</value>
+  </data>
 </root>
