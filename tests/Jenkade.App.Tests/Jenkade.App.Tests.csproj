@@ -16,6 +16,10 @@
     <ProjectReference Include="..\..\src\Jenkade.App\Jenkade.App.csproj" />
     <ProjectReference Include="..\Jenkade.Testing\Jenkade.Testing.csproj" />
   </ItemGroup>
+  <!-- The views' XAML, to check every resource key they use exists in the theme. -->
+  <ItemGroup>
+    <Content Include="..\..\src\Jenkade.App\**\*.axaml" Link="axaml\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
   <!-- The version MinVer computes at build time, to compare with what the About window shows. -->
   <Target Name="EmbedMinVerVersion" AfterTargets="MinVer">
     <ItemGroup>

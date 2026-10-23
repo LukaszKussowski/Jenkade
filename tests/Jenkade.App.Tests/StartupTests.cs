@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
-using Avalonia.LogicalTree;
 using Jenkade.App.Views;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,7 +23,7 @@ public class StartupTests
 
         Assert.True(window.IsVisible);
         Assert.Equal("Jenkade", window.Title);
-        Assert.Equal(helpMenu, window.GetLogicalDescendants().OfType<MenuItem>().Single(item => item.Name == "HelpMenuItem").Header);
+        Assert.Equal(helpMenu, Ui.Find<MenuItem>(window, "HelpMenuItem").Header);
         Assert.Empty(bindingErrors.Messages);
     }
 

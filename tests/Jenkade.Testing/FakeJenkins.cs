@@ -8,6 +8,7 @@ namespace Jenkade.Testing;
 /// <summary>
 /// Stands in for a Jenkins server at <see cref="Address"/>: serves recorded responses by path and records every request.
 /// Paths without a recording get Jenkins' 404; other hosts and ports refuse the connection.
+/// New recordings: docs/recording-jenkins.md.
 /// </summary>
 public sealed class FakeJenkins : HttpMessageHandler
 {

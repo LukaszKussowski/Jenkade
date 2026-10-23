@@ -9,7 +9,9 @@
 | `<OutputType>Exe</OutputType>` in the test project | `Could not find app host executable` |
 | `SkiaSharp.NativeAssets.Linux.NoDependencies` + `SkiaSharp.NativeAssets.Linux` with `ExcludeAssets="all"` | `libfontconfig.so.1: cannot open shared object file` |
 | `Avalonia.Fonts.Inter` + `.WithInterFont()` + `FontManagerOptions { DefaultFamilyName = "fonts:Inter#Inter" }` in `TestAppBuilder` | `Default font family name can't be null or empty` (the container has no system fonts) |
-| Controls found through the logical tree, not `FindControl` | `Could not find parent name scope` for controls outside the window's name scope |
+| Controls found through the logical tree, not `FindControl` (`Ui.Find`) | `Could not find parent name scope` for controls outside the window's name scope |
+| Buttons clicked through their automation peer, menu items through `ClickEvent` (`Ui.Click`) | Raising `ClickEvent` on a `Button` runs no `Command`, silently; a `MenuItem`'s peer throws `ElementNotEnabledException` inside a closed submenu |
+| Each `{DynamicResource}` key checked against the theme (`ThemeResourceTests`) | WinUI-only keys such as `TextFillColorSecondaryBrush` don't exist in Avalonia's Fluent theme: default colours, no error |
 | Container builds output to `artifacts/container/` (`Directory.Build.props`), apart from Visual Studio's `bin/`/`obj/` on the shared Windows checkout | `No test projects were found` (VS restored `obj/` with Windows package paths), or `MSB3026 ... Access to the path ... is denied` (VS holds the binaries) |
 | `frame.Save(path, new PngBitmapEncoderOptions())` | `CS0618: 'Bitmap.Save(string, int?)' is obsolete` (fails the build: warnings are errors) |
 
@@ -19,6 +21,7 @@ To upgrade Avalonia, check which xUnit version the new `Avalonia.Headless.XUnit`
 
 ## Test helpers
 
+- `Ui.Find` / `Ui.Click` find a control by name anywhere in a window and click it so its `Command` runs.
 - `TestSeams` creates the application host with only the platform seams replaced: `FakeJenkins` (from `tests/Jenkade.Testing`, shared by every test level), an in-memory credential store and a temporary settings folder. Hosts created from one `TestSeams` share them, so creating a second host simulates a restart.
 - `BindingErrorLog.Capture()` installs an Avalonia log sink that collects binding warnings and errors; assert `Messages` is empty.
 - `Screenshots.Save(window, name)` writes `screenshots/{name}.png` next to the test binaries (in the container under `artifacts/container/bin/Jenkade.App.Tests/`). CI uploads them as the `screenshots` artifact.

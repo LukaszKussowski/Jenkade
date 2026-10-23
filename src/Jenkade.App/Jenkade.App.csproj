@@ -16,6 +16,9 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Jenkade.App.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Jenkade.Presentation\Jenkade.Presentation.csproj" />
   </ItemGroup>
 </Project>

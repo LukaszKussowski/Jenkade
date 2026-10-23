@@ -1,10 +1,5 @@
-using Avalonia.Automation.Peers;
-using Avalonia.Automation.Provider;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
-using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
-using Avalonia.Threading;
 using Jenkade.App.Views;
 using Jenkade.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,23 +22,22 @@ public sealed class AddConnectionTests : IDisposable
         {
             var mainWindow = host.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
-            Find<MenuItem>(mainWindow, "AddConnectionMenuItem").RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
-            Dispatcher.UIThread.RunJobs();
+            Ui.Click(Ui.Find<MenuItem>(mainWindow, "AddConnectionMenuItem"));
             var form = Assert.IsType<AddConnectionWindow>(Assert.Single(mainWindow.OwnedWindows));
 
-            Find<TextBox>(form, "DisplayName").Text = "Company Jenkins";
-            Find<TextBox>(form, "Address").Text = "https://jenkins.example.com";
-            Find<TextBox>(form, "UserName").Text = "anna";
-            Find<TextBox>(form, "ApiToken").Text = "0000wrong0000";
+            Ui.Find<TextBox>(form, "DisplayName").Text = "Company Jenkins";
+            Ui.Find<TextBox>(form, "Address").Text = "https://jenkins.example.com";
+            Ui.Find<TextBox>(form, "UserName").Text = "anna";
+            Ui.Find<TextBox>(form, "ApiToken").Text = "0000wrong0000";
             app.Jenkins.Serve("api/json", "unauthorized.http");
-            Click(Find<Button>(form, "Save"));
+            Ui.Click(Ui.Find<Button>(form, "Save"));
 
-            Assert.Equal(invalidCredentials, Find<TextBlock>(form, "Error").Text);
+            Assert.Equal(invalidCredentials, Ui.Find<TextBlock>(form, "Error").Text);
             Screenshots.Save(form, $"add-connection-invalid-credentials-{language}");
 
-            Find<TextBox>(form, "ApiToken").Text = "11a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7";
+            Ui.Find<TextBox>(form, "ApiToken").Text = "11a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7";
             app.Jenkins.Serve("api/json", "root.http");
-            Click(Find<Button>(form, "Save"));
+            Ui.Click(Ui.Find<Button>(form, "Save"));
 
             Assert.False(form.IsVisible);
             Assert.Equal(("anna", "11a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7"), app.Jenkins.Requests[^1].BasicCredentials);
@@ -61,15 +55,5 @@ public sealed class AddConnectionTests : IDisposable
     public void Dispose() => app.Dispose();
 
     private static IEnumerable<string> ConnectionNames(MainWindow window) =>
-        Find<ListBox>(window, "Connections").Items.Cast<Connection>().Select(connection => connection.DisplayName);
-
-    // The automation peer clicks as the user does: the button's command runs, unlike raising ClickEvent.
-    private static void Click(Button button)
-    {
-        ControlAutomationPeer.CreatePeerForElement(button).GetProvider<IInvokeProvider>()!.Invoke();
-        Dispatcher.UIThread.RunJobs();
-    }
-
-    private static T Find<T>(ILogical root, string name) where T : Control =>
-        root.GetLogicalDescendants().OfType<T>().Single(control => control.Name == name);
+        Ui.Find<ListBox>(window, "Connections").Items.Cast<Connection>().Select(connection => connection.DisplayName);
 }
