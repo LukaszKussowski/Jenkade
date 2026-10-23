@@ -39,4 +39,64 @@
   <data name="DurationHoursMinutes" xml:space="preserve">
     <value>{0} h {1} min</value>
   </data>
+  <data name="VerificationInvalidCredentials" xml:space="preserve">
+    <value>Jenkins rejected the user name or API token.</value>
+  </data>
+  <data name="VerificationNoPermission" xml:space="preserve">
+    <value>The user has no permission to read Jenkins (Overall/Read).</value>
+  </data>
+  <data name="VerificationUnreachable" xml:space="preserve">
+    <value>Nothing answers at this address. Check the address and your network access.</value>
+  </data>
+  <data name="VerificationUntrustedCertificate" xml:space="preserve">
+    <value>The operating system doesn't trust this address's certificate. Add its certificate authority to the system certificate store.</value>
+  </data>
+  <data name="VerificationNotJenkins" xml:space="preserve">
+    <value>There's no Jenkins at this address.</value>
+  </data>
+  <data name="VerificationUnexpectedResponse" xml:space="preserve">
+    <value>Jenkins answered with an error. Try again later.</value>
+  </data>
+  <data name="InvalidAddress" xml:space="preserve">
+    <value>Enter the full address, starting with https:// or http://.</value>
+  </data>
+  <data name="MenuConnection" xml:space="preserve">
+    <value>_Connection</value>
+  </data>
+  <data name="MenuAddConnection" xml:space="preserve">
+    <value>_Add Connection…</value>
+  </data>
+  <data name="NoConnections" xml:space="preserve">
+    <value>No Connections yet. Add one from the Connection menu.</value>
+  </data>
+  <data name="AddConnectionTitle" xml:space="preserve">
+    <value>Add Connection</value>
+  </data>
+  <data name="ConnectionDisplayName" xml:space="preserve">
+    <value>Display name</value>
+  </data>
+  <data name="ConnectionAddress" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="ConnectionUserName" xml:space="preserve">
+    <value>User name</value>
+  </data>
+  <data name="ConnectionApiToken" xml:space="preserve">
+    <value>API token</value>
+  </data>
+  <data name="Verifying" xml:space="preserve">
+    <value>Verifying…</value>
+  </data>
+  <data name="VerifyAndSave" xml:space="preserve">
+    <value>Verify and save</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="VerificationRedirected" xml:space="preserve">
+    <value>This address redirects elsewhere. Enter the address Jenkins is served at, e.g. with https://.</value>
+  </data>
+  <data name="NoCredentialStore" xml:space="preserve">
+    <value>This system has no credential store to keep the API token in, so the Connection can't be saved.</value>
+  </data>
 </root>

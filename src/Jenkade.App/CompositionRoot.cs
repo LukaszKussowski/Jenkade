@@ -8,14 +8,31 @@ namespace Jenkade.App;
 
 public static class CompositionRoot
 {
-    public static IHost CreateHost()
+    /// <param name="replaceSeams">
+    /// Registers test stand-ins for the platform seams after the real ones (the last registration wins):
+    /// <see cref="HttpMessageHandler"/> (Jenkins), <see cref="ICredentialStore"/>, <see cref="SettingsFolder"/>, <see cref="TimeProvider"/>.
+    /// </param>
+    public static IHost CreateHost(Action<IServiceCollection>? replaceSeams = null)
     {
         var builder = Host.CreateEmptyApplicationBuilder(new HostApplicationBuilderSettings());
 
         builder.Services.AddSingleton(ApplicationVersion.FromAssembly(typeof(CompositionRoot).Assembly));
+        // No certificate validation callback: TLS trust is the operating system's (no way to ignore certificate errors).
+        // No redirects: following one drops the Authorization header, so Jenkins would see an anonymous request.
+        builder.Services.AddSingleton<HttpMessageHandler>(_ => new SocketsHttpHandler { AllowAutoRedirect = false });
+        builder.Services.AddSingleton<ICredentialStore>(_ => OperatingSystem.IsWindows()
+            ? new WindowsCredentialManager()
+            : new UnavailableCredentialStore());
+        builder.Services.AddSingleton(_ => SettingsFolder.ForCurrentUser());
+        builder.Services.AddSingleton(TimeProvider.System);
+        replaceSeams?.Invoke(builder.Services);
+
+        builder.Services.AddSingleton<JenkinsClient>();
+        builder.Services.AddSingleton<ConnectionStore>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<MainWindowViewModel>();
         builder.Services.AddTransient<AboutViewModel>();
+        builder.Services.AddTransient<AddConnectionViewModel>();
         builder.Services.AddSingleton<MainWindow>();
 
         return builder.Build();

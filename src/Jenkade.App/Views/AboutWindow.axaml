@@ -11,7 +11,7 @@
     <TextBlock Text="Jenkade" FontSize="24" FontWeight="SemiBold" />
     <TextBlock Text="{x:Static vm:Strings.AboutDescription}" />
     <StackPanel Orientation="Horizontal" Spacing="6">
-      <TextBlock Text="{x:Static vm:Strings.AboutVersion}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+      <TextBlock Text="{x:Static vm:Strings.AboutVersion}" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
       <TextBlock Name="Version" Text="{Binding Version}" />
     </StackPanel>
     <Button Content="{x:Static vm:Strings.Ok}" IsDefault="True" IsCancel="True" HorizontalAlignment="Right" Margin="0,16,0,0"

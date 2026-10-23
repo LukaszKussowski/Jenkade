@@ -29,3 +29,19 @@ jobs:
           name: screenshots
           path: tests/Jenkade.App.Tests/bin/Release/net10.0/screenshots/
           if-no-files-found: ignore
+
+  # Runs what only Windows can: the Windows Credential Manager tests, skipped on Linux. Polish-text placement is
+  # platform-independent and stays on the Linux job.
+  build-and-test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # MinVer computes the version from tags and history
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build and test
+        run: dotnet test --configuration Release

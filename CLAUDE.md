@@ -17,3 +17,8 @@ Default vocabulary: needs-triage, needs-info, ready-for-agent, ready-for-human, 
 ### Domain docs
 
 Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+## Working with the user
+
+- Implement proposals (retro findings, review suggestions, options) only once the user names the ones to do; a question about them gets a recap ending with the choice.
+- Each issue starts on a fresh branch from `origin/main` (`feat/<slug>`), even when the current branch is something else.

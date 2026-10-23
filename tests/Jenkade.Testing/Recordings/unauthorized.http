@@ -1,0 +1,21 @@
+HTTP/1.1 401 Unauthorized
+Date: Thu, 22 Oct 2026 12:05:02 GMT
+X-Content-Type-Options: nosniff
+X-Jenkins: 2.528.1
+X-Jenkins-Session: 3f1c9a2e
+Cache-Control: must-revalidate,no-cache,no-store
+Content-Type: text/html;charset=iso-8859-1
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"/>
+<title>Error 401 Invalid password/token for user: anna</title>
+</head>
+<body><h2>HTTP ERROR 401 Invalid password/token for user: anna</h2>
+<table>
+<tr><th>URI:</th><td>/api/json</td></tr>
+<tr><th>STATUS:</th><td>401</td></tr>
+<tr><th>MESSAGE:</th><td>Invalid password/token for user: anna</td></tr>
+</table>
+</body>
+</html>
