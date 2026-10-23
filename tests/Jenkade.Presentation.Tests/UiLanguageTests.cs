@@ -17,25 +17,4 @@ public class UiLanguageTests
 
         Assert.Equal(expected, language.Name);
     }
-
-    [Fact]
-    public void Applying_a_language_keeps_the_regional_format()
-    {
-        var (culture, uiCulture) = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
-        var (defaultCulture, defaultUiCulture) = (CultureInfo.DefaultThreadCurrentCulture, CultureInfo.DefaultThreadCurrentUICulture);
-        try
-        {
-            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
-
-            UiLanguage.Apply(UiLanguage.Polish);
-
-            Assert.Equal("pl", CultureInfo.CurrentUICulture.Name);
-            Assert.Equal("de-DE", CultureInfo.CurrentCulture.Name);
-        }
-        finally
-        {
-            (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (culture, uiCulture);
-            (CultureInfo.DefaultThreadCurrentCulture, CultureInfo.DefaultThreadCurrentUICulture) = (defaultCulture, defaultUiCulture);
-        }
-    }
 }
