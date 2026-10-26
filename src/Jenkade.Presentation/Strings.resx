@@ -63,17 +63,17 @@
   <data name="MenuConnection" xml:space="preserve">
     <value>_Connection</value>
   </data>
-  <data name="MenuAddConnection" xml:space="preserve">
-    <value>_Add Connection…</value>
+  <data name="MenuConnectionSettings" xml:space="preserve">
+    <value>_Connection settings…</value>
   </data>
-  <data name="NoConnections" xml:space="preserve">
-    <value>No Connections yet. Add one from the Connection menu.</value>
+  <data name="NoConnection" xml:space="preserve">
+    <value>No Connection yet. Set it up from the Connection menu.</value>
   </data>
-  <data name="AddConnectionTitle" xml:space="preserve">
-    <value>Add Connection</value>
+  <data name="ConnectionSettingsTitle" xml:space="preserve">
+    <value>Connection settings</value>
   </data>
   <data name="ConnectionDisplayName" xml:space="preserve">
-    <value>Display name</value>
+    <value>Display name (optional)</value>
   </data>
   <data name="ConnectionAddress" xml:space="preserve">
     <value>Address</value>
@@ -98,5 +98,8 @@
   </data>
   <data name="NoCredentialStore" xml:space="preserve">
     <value>This system has no credential store to keep the API token in, so the Connection can't be saved.</value>
+  </data>
+  <data name="KeepSavedApiToken" xml:space="preserve">
+    <value>Leave empty to keep the saved token</value>
   </data>
 </root>

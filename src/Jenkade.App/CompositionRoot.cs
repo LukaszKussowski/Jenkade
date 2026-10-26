@@ -32,7 +32,7 @@ public static class CompositionRoot
         builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<MainWindowViewModel>();
         builder.Services.AddTransient<AboutViewModel>();
-        builder.Services.AddTransient<AddConnectionViewModel>();
+        builder.Services.AddTransient<ConnectionSettingsViewModel>();
         builder.Services.AddSingleton<MainWindow>();
 
         return builder.Build();

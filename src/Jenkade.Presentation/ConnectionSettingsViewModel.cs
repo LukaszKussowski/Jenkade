@@ -4,11 +4,28 @@ using Jenkade.Core;
 
 namespace Jenkade.Presentation;
 
-/// <summary>The Add-Connection form: saves a Connection only once Jenkins has verified it.</summary>
-public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, ConnectionStore connections) : ObservableObject
+/// <summary>
+/// The Connection settings form: sets up the one Connection, or replaces it (ADR 0005), saving only what Jenkins has
+/// verified. Opens with the saved Connection; an empty API token field keeps the saved token.
+/// </summary>
+public sealed partial class ConnectionSettingsViewModel : ObservableObject
 {
+    private readonly JenkinsClient jenkins;
+    private readonly ConnectionStore connections;
+    private readonly bool hasSavedConnection;
+
+    public ConnectionSettingsViewModel(JenkinsClient jenkins, ConnectionStore connections)
+    {
+        (this.jenkins, this.connections) = (jenkins, connections);
+        if (connections.Load() is { } saved)
+        {
+            hasSavedConnection = true;
+            (DisplayName, Address, UserName) = (saved.DisplayName, saved.Address.ToString(), saved.UserName);
+        }
+    }
+
+    /// <summary>Optional label; the main window names a Connection without one by its address.</summary>
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     public partial string DisplayName { get; set; } = "";
 
     [ObservableProperty]
@@ -23,6 +40,9 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     public partial string ApiToken { get; set; } = "";
 
+    /// <summary>Tells the user an empty API token field keeps the saved token.</summary>
+    public string ApiTokenPlaceholder => hasSavedConnection ? Strings.KeepSavedApiToken : "";
+
     /// <summary>Why the Connection wasn't saved, or null.</summary>
     [ObservableProperty]
     public partial string? Error { get; private set; }
@@ -33,7 +53,8 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
     public void Close() => SaveCommand.Cancel();
 
     private bool CanSave =>
-        new[] { DisplayName, Address, UserName, ApiToken }.All(value => !string.IsNullOrWhiteSpace(value));
+        !string.IsNullOrWhiteSpace(Address) && !string.IsNullOrWhiteSpace(UserName)
+        && (hasSavedConnection || !string.IsNullOrWhiteSpace(ApiToken));
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync(CancellationToken cancellationToken)
@@ -44,25 +65,19 @@ public sealed partial class AddConnectionViewModel(JenkinsClient jenkins, Connec
             return;
         }
 
-        var (userName, apiToken) = (UserName.Trim(), ApiToken.Trim());
-        ConnectionVerification verification;
+        var connection = new Connection(DisplayName.Trim(), address, UserName.Trim());
         try
         {
-            verification = await jenkins.VerifyAsync(address, userName, apiToken, cancellationToken);
+            var apiToken = string.IsNullOrWhiteSpace(ApiToken) ? connections.ApiToken() ?? "" : ApiToken.Trim();
+            var verification = await jenkins.VerifyAsync(address, connection.UserName, apiToken, cancellationToken);
+            Error = Explain(verification);
+            if (Error is not null)
+                return;
+            connections.Save(connection, apiToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return;
-        }
-
-        Error = Explain(verification);
-        if (Error is not null)
-            return;
-
-        Connection connection;
-        try
-        {
-            connection = connections.Add(DisplayName.Trim(), address, userName, apiToken);
         }
         catch (CredentialStoreUnavailableException)
         {

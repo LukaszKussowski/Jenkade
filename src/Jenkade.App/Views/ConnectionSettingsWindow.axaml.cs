@@ -4,12 +4,12 @@ using Jenkade.Presentation;
 
 namespace Jenkade.App.Views;
 
-public partial class AddConnectionWindow : Window
+public partial class ConnectionSettingsWindow : Window
 {
     // Required by the Avalonia XAML loader and previewer.
-    public AddConnectionWindow() => InitializeComponent();
+    public ConnectionSettingsWindow() => InitializeComponent();
 
-    public AddConnectionWindow(AddConnectionViewModel viewModel) : this()
+    public ConnectionSettingsWindow(ConnectionSettingsViewModel viewModel) : this()
     {
         DataContext = viewModel;
         viewModel.Saved += (_, connection) => Close(connection);

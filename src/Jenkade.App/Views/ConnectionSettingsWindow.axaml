@@ -1,9 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Jenkade.Presentation"
-        x:Class="Jenkade.App.Views.AddConnectionWindow"
-        x:DataType="vm:AddConnectionViewModel"
-        Title="{x:Static vm:Strings.AddConnectionTitle}"
+        x:Class="Jenkade.App.Views.ConnectionSettingsWindow"
+        x:DataType="vm:ConnectionSettingsViewModel"
+        Title="{x:Static vm:Strings.ConnectionSettingsTitle}"
         SizeToContent="Height"
         Width="460"
         CanResize="False"
@@ -23,7 +23,7 @@
     </StackPanel>
     <StackPanel Spacing="4">
       <Label Content="{x:Static vm:Strings.ConnectionApiToken}" Target="ApiToken" />
-      <TextBox Name="ApiToken" Text="{Binding ApiToken}" PasswordChar="•" />
+      <TextBox Name="ApiToken" Text="{Binding ApiToken}" PasswordChar="•" PlaceholderText="{Binding ApiTokenPlaceholder}" />
     </StackPanel>
     <TextBlock Name="Error" Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}"
                TextWrapping="Wrap" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />

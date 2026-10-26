@@ -7,7 +7,7 @@ Each term lists its Polish UI wording, which `Strings.pl.resx` must follow. The 
 ## Language
 
 **Connection**:
-A user-configured access to one Jenkins server: its address and the identity Jenkade acts as.
+The user-configured access to the Jenkins server: its address and the identity Jenkade acts as. Jenkade has one Connection at a time; setting up another replaces it.
 _Avoid_: server, instance, profile, account
 _Polish UI_: Połączenie (not „serwer”, „serwera”, „serwerze”, „serwery”, „serwerów”, „profil”, „profilu”, „profile”, „konto”, „konta”, „kont”)
 

@@ -4,46 +4,40 @@ using System.Text.Json.Serialization;
 namespace Jenkade.Core;
 
 /// <summary>
-/// The user's Connections: settings without secrets in <c>connections.json</c> in the <see cref="SettingsFolder"/>,
-/// API tokens in the <see cref="ICredentialStore"/>.
+/// The user's one Connection (ADR 0005): settings without secrets in <c>connection.json</c> in the
+/// <see cref="SettingsFolder"/>, the API token in the <see cref="ICredentialStore"/>.
 /// </summary>
 public sealed class ConnectionStore(SettingsFolder folder, ICredentialStore credentials)
 {
-    private string SettingsFile => Path.Combine(folder.Path, "connections.json");
+    private const string CredentialKey = "Jenkade:Connection";
 
-    public IReadOnlyList<Connection> All()
+    private string SettingsFile => Path.Combine(folder.Path, "connection.json");
+
+    /// <summary>The saved Connection, or null before the user has set one up.</summary>
+    public Connection? Load()
     {
         if (!File.Exists(SettingsFile))
-            return [];
+            return null;
         using var stream = File.OpenRead(SettingsFile);
-        return JsonSerializer.Deserialize(stream, ConnectionSettingsJson.Default.ConnectionSettings)?.Connections ?? [];
+        return JsonSerializer.Deserialize(stream, ConnectionJson.Default.Connection);
     }
 
-    public Connection Add(string displayName, Uri address, string userName, string apiToken)
+    /// <summary>Saves the Connection and its API token in place of the ones saved before.</summary>
+    public void Save(Connection connection, string apiToken)
     {
-        var connection = new Connection(Guid.NewGuid(), displayName, address, userName);
-        credentials.Save(CredentialKey(connection), apiToken);
-        Save(new ConnectionSettings([.. All(), connection]));
-        return connection;
-    }
+        credentials.Save(CredentialKey, apiToken);
 
-    public string? ApiToken(Connection connection) => credentials.Read(CredentialKey(connection));
-
-    private static string CredentialKey(Connection connection) => $"Jenkade:Connection:{connection.Id}";
-
-    // Written next to the settings file and moved over it, so a crash never leaves it half-written.
-    private void Save(ConnectionSettings settings)
-    {
+        // Written next to the settings file and moved over it, so a crash never leaves it half-written.
         Directory.CreateDirectory(folder.Path);
         var temporaryFile = SettingsFile + ".tmp";
         using (var stream = File.Create(temporaryFile))
-            JsonSerializer.Serialize(stream, settings, ConnectionSettingsJson.Default.ConnectionSettings);
+            JsonSerializer.Serialize(stream, connection, ConnectionJson.Default.Connection);
         File.Move(temporaryFile, SettingsFile, overwrite: true);
     }
+
+    public string? ApiToken() => credentials.Read(CredentialKey);
 }
 
-internal sealed record ConnectionSettings(IReadOnlyList<Connection> Connections);
-
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = true)]
-[JsonSerializable(typeof(ConnectionSettings))]
-internal sealed partial class ConnectionSettingsJson : JsonSerializerContext;
+[JsonSerializable(typeof(Connection))]
+internal sealed partial class ConnectionJson : JsonSerializerContext;

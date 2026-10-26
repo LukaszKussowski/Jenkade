@@ -14,9 +14,9 @@ internal sealed class DialogService(IServiceProvider services) : IDialogService
         return about.ShowDialog(services.GetRequiredService<MainWindow>());
     }
 
-    public Task<Connection?> ShowAddConnectionAsync()
+    public Task<Connection?> ShowConnectionSettingsAsync()
     {
-        var form = new AddConnectionWindow(services.GetRequiredService<AddConnectionViewModel>());
+        var form = new ConnectionSettingsWindow(services.GetRequiredService<ConnectionSettingsViewModel>());
         return form.ShowDialog<Connection?>(services.GetRequiredService<MainWindow>());
     }
 }

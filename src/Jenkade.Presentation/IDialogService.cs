@@ -7,6 +7,6 @@ public interface IDialogService
 {
     Task ShowAboutAsync();
 
-    /// <summary>The Connection the user added, or null when they closed the form without saving one.</summary>
-    Task<Connection?> ShowAddConnectionAsync();
+    /// <summary>The Connection the user saved, or null when they closed the Connection settings without saving.</summary>
+    Task<Connection?> ShowConnectionSettingsAsync();
 }

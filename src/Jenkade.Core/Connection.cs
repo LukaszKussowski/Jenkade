@@ -2,8 +2,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Jenkade.Core;
 
-/// <summary>A user-configured access to one Jenkins server; its API token lives in the <see cref="ICredentialStore"/>.</summary>
-public sealed record Connection(Guid Id, string DisplayName, Uri Address, string UserName)
+/// <summary>
+/// The user-configured access to the Jenkins server; Jenkade has at most one (ADR 0005). Its API token lives in the
+/// <see cref="ICredentialStore"/>. <see cref="DisplayName"/> is an optional label and may be empty.
+/// </summary>
+public sealed record Connection(string DisplayName, Uri Address, string UserName)
 {
     /// <summary>
     /// Accepts an absolute http or https address, e.g. <c>https://jenkins.example.com</c>, and ends its path with

@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Jenkade.Core;
@@ -7,13 +6,20 @@ namespace Jenkade.Presentation;
 
 public sealed partial class MainWindowViewModel(IDialogService dialogs, ConnectionStore connections) : ObservableObject
 {
-    public ObservableCollection<Connection> Connections { get; } = [.. connections.All()];
+    /// <summary>The one Connection (ADR 0005), or null before the user sets it up.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ConnectionName))]
+    public partial Connection? Connection { get; private set; } = connections.Load();
+
+    /// <summary>The Connection's display name, or its address when it has none.</summary>
+    public string? ConnectionName =>
+        Connection is null ? null : string.IsNullOrEmpty(Connection.DisplayName) ? Connection.Address.ToString() : Connection.DisplayName;
 
     [RelayCommand]
-    private async Task AddConnectionAsync()
+    private async Task ShowConnectionSettingsAsync()
     {
-        if (await dialogs.ShowAddConnectionAsync() is { } connection)
-            Connections.Add(connection);
+        if (await dialogs.ShowConnectionSettingsAsync() is { } saved)
+            Connection = saved;
     }
 
     [RelayCommand]
