@@ -196,6 +196,56 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         Assert.Null(connections.Load().Connection);
     }
 
+    [Fact]
+    public async Task Explains_that_the_credential_store_failed_to_keep_the_API_token()
+    {
+        CultureInfo.CurrentUICulture = UiLanguage.English;
+        jenkins.Serve("api/json", "root.http");
+        var form = FilledForm();
+        var saved = false;
+        form.Saved += (_, _) => saved = true;
+        credentials.Failing = true;
+
+        await form.SaveCommand.ExecuteAsync(null);
+
+        Assert.Equal("The Connection couldn't be saved: The parameter is incorrect.", form.Error);
+        Assert.False(saved);
+    }
+
+    [Fact]
+    public async Task Explains_that_the_credential_store_failed_to_read_the_saved_API_token()
+    {
+        CultureInfo.CurrentUICulture = UiLanguage.English;
+        SaveEarlierConnection();
+        var form = EmptyForm();
+        credentials.Failing = true;
+
+        await form.SaveCommand.ExecuteAsync(null);
+
+        Assert.Equal("The Connection couldn't be saved: The parameter is incorrect.", form.Error);
+        Assert.Empty(jenkins.Requests);
+    }
+
+    [Fact]
+    public async Task Explains_that_the_settings_file_could_not_be_written_and_keeps_the_saved_Connection()
+    {
+        CultureInfo.CurrentUICulture = UiLanguage.English;
+        SaveEarlierConnection();
+        Directory.CreateDirectory(Path.Combine(settings.Folder.Path, "connection.json.tmp"));
+        jenkins.Serve("api/json", "root.http");
+        var form = FilledForm();
+        form.DisplayName = "Company CI";
+        var saved = false;
+        form.Saved += (_, _) => saved = true;
+
+        await form.SaveCommand.ExecuteAsync(null);
+
+        Assert.StartsWith("The Connection couldn't be saved: ", form.Error);
+        Assert.False(saved);
+        Assert.Equal("Company Jenkins", Connections().Load().Connection?.DisplayName);
+        Assert.Equal(EarlierApiToken, Connections().ApiToken());
+    }
+
     [Theory]
     [InlineData("jenkins.example.com")]
     [InlineData("ftp://jenkins.example.com/")]

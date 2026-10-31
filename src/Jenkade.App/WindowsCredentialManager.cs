@@ -29,7 +29,7 @@ internal sealed partial class WindowsCredentialManager : ICredentialStore
                 Persist = PersistLocalMachine,
             };
             if (!CredWrite(&credential, 0))
-                throw new Win32Exception(Marshal.GetLastPInvokeError());
+                throw Failure(Marshal.GetLastPInvokeError());
         }
     }
 
@@ -38,7 +38,7 @@ internal sealed partial class WindowsCredentialManager : ICredentialStore
         if (!CredRead(key, GenericCredential, 0, out var credential))
         {
             var error = Marshal.GetLastPInvokeError();
-            return error == ErrorNotFound ? null : throw new Win32Exception(error);
+            return error == ErrorNotFound ? null : throw Failure(error);
         }
         try
         {
@@ -48,6 +48,13 @@ internal sealed partial class WindowsCredentialManager : ICredentialStore
         {
             CredFree(credential);
         }
+    }
+
+    // Win32Exception's message is the system's own, in the Windows display language.
+    private static CredentialStoreException Failure(int error)
+    {
+        var reason = new Win32Exception(error);
+        return new CredentialStoreException(reason.Message, reason);
     }
 
     // CREDENTIALW from wincred.h.

@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Jenkade.Core;
@@ -82,6 +83,11 @@ public sealed partial class ConnectionSettingsViewModel : ObservableObject
         catch (CredentialStoreUnavailableException)
         {
             Error = Strings.NoCredentialStore;
+            return;
+        }
+        catch (Exception exception) when (exception is CredentialStoreException or ConnectionNotSavedException)
+        {
+            Error = string.Format(CultureInfo.CurrentCulture, Strings.ConnectionNotSaved, exception.Message);
             return;
         }
 

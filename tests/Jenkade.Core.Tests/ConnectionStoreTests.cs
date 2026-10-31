@@ -39,6 +39,21 @@ public sealed class ConnectionStoreTests : IDisposable
     }
 
     [Fact]
+    public void Keeps_the_saved_Connection_and_its_API_token_when_the_settings_file_cannot_be_written()
+    {
+        var connections = new ConnectionStore(settings.Folder, credentials);
+        connections.Save(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), ApiToken);
+        Directory.CreateDirectory(Path.Combine(settings.Folder.Path, "connection.json.tmp"));
+
+        Assert.Throws<ConnectionNotSavedException>(() =>
+            connections.Save(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), "99f8e7d6c5b4a3928170f6e5d4c3b2a1f0"));
+
+        var restarted = new ConnectionStore(settings.Folder, credentials);
+        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), restarted.Load().Connection);
+        Assert.Equal(ApiToken, restarted.ApiToken());
+    }
+
+    [Fact]
     public void Has_no_Connection_on_the_first_run_before_the_settings_folder_exists()
     {
         var firstRun = new ConnectionStore(new SettingsFolder(Path.Combine(settings.Folder.Path, "Jenkade")), credentials);

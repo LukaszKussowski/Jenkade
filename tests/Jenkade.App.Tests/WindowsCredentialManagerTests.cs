@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using Jenkade.Core;
 
 namespace Jenkade.App.Tests;
 
@@ -20,6 +21,16 @@ public class WindowsCredentialManagerTests
         credentials.Save(Key, "99f8e7d6c5b4a3928170f6e5d4c3b2a1f0");
 
         Assert.Equal("99f8e7d6c5b4a3928170f6e5d4c3b2a1f0", credentials.Read(Key));
+    }
+
+    [Fact]
+    public void Refuses_a_secret_longer_than_the_Credential_Manager_keeps_with_its_own_reason()
+    {
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "The Windows Credential Manager exists only on Windows.");
+
+        // At most 2560 bytes (CRED_MAX_CREDENTIAL_BLOB_SIZE), i.e. 1280 UTF-16 characters.
+        var refused = Assert.Throws<CredentialStoreException>(() => new WindowsCredentialManager().Save(Key, new string('a', 1281)));
+        Assert.False(string.IsNullOrWhiteSpace(refused.Message));
     }
 
     [Fact]

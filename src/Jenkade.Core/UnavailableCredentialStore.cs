@@ -12,4 +12,4 @@ public sealed class UnavailableCredentialStore : ICredentialStore
 }
 
 public sealed class CredentialStoreUnavailableException()
-    : InvalidOperationException("This platform has no supported credential store for API tokens.");
+    : CredentialStoreException("This platform has no supported credential store for API tokens.");

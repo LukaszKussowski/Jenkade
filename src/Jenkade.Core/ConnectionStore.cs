@@ -35,18 +35,31 @@ public sealed class ConnectionStore(SettingsFolder folder, ICredentialStore cred
         return new SavedConnection(null, Unreadable: true);
     }
 
-    /// <summary>Saves the Connection and its API token in place of the ones saved before.</summary>
+    /// <summary>
+    /// Saves the Connection and its API token in place of the ones saved before, or keeps those and throws a
+    /// <see cref="CredentialStoreException"/> or a <see cref="ConnectionNotSavedException"/>.
+    /// </summary>
     public void Save(Connection connection, string apiToken)
     {
+        var previousApiToken = credentials.Read(CredentialKey);
         credentials.Save(CredentialKey, apiToken);
-
-        // Written next to the settings file and moved over it, so a crash never leaves it half-written.
-        Directory.CreateDirectory(folder.Path);
-        var temporaryFile = SettingsFile + ".tmp";
-        using (var stream = File.Create(temporaryFile))
-            JsonSerializer.Serialize(stream, new ConnectionFile(connection.DisplayName, connection.Address.AbsoluteUri, connection.UserName),
-                ConnectionJson.Default.ConnectionFile);
-        File.Move(temporaryFile, SettingsFile, overwrite: true);
+        try
+        {
+            // Written next to the settings file and moved over it, so a crash never leaves it half-written.
+            Directory.CreateDirectory(folder.Path);
+            var temporaryFile = SettingsFile + ".tmp";
+            using (var stream = File.Create(temporaryFile))
+                JsonSerializer.Serialize(stream, new ConnectionFile(connection.DisplayName, connection.Address.AbsoluteUri, connection.UserName),
+                    ConnectionJson.Default.ConnectionFile);
+            File.Move(temporaryFile, SettingsFile, overwrite: true);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // The saved Connection stays, so it keeps its own API token.
+            if (previousApiToken is not null)
+                credentials.Save(CredentialKey, previousApiToken);
+            throw new ConnectionNotSavedException(exception);
+        }
     }
 
     public string? ApiToken() => credentials.Read(CredentialKey);
@@ -58,6 +71,9 @@ internal sealed partial class ConnectionJson : JsonSerializerContext;
 
 /// <summary>The contents of <c>connection.json</c>, each field possibly missing.</summary>
 internal sealed record ConnectionFile(string? DisplayName, string? Address, string? UserName);
+
+/// <summary>The settings file couldn't be written; the message is the file system's reason.</summary>
+public sealed class ConnectionNotSavedException(Exception innerException) : Exception(innerException.Message, innerException);
 
 /// <summary>What <see cref="ConnectionStore.Load"/> found: the Connection, or none and whether a damaged file is why.</summary>
 public sealed record SavedConnection(Connection? Connection, bool Unreadable);

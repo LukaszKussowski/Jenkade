@@ -102,6 +102,9 @@
   <data name="NoCredentialStore" xml:space="preserve">
     <value>This system has no credential store to keep the API token in, so the Connection can't be saved.</value>
   </data>
+  <data name="ConnectionNotSaved" xml:space="preserve">
+    <value>The Connection couldn't be saved: {0}</value>
+  </data>
   <data name="KeepSavedApiToken" xml:space="preserve">
     <value>Leave empty to keep the saved token</value>
   </data>

@@ -7,7 +7,24 @@ public sealed class InMemoryCredentialStore : ICredentialStore
 {
     private readonly Dictionary<string, string> secrets = [];
 
-    public void Save(string key, string secret) => secrets[key] = secret;
+    /// <summary>Fails every save and read, as a Credential Manager refusing a too-long token does.</summary>
+    public bool Failing { get; set; }
 
-    public string? Read(string key) => secrets.GetValueOrDefault(key);
+    public void Save(string key, string secret)
+    {
+        ThrowIfFailing();
+        secrets[key] = secret;
+    }
+
+    public string? Read(string key)
+    {
+        ThrowIfFailing();
+        return secrets.GetValueOrDefault(key);
+    }
+
+    private void ThrowIfFailing()
+    {
+        if (Failing)
+            throw new CredentialStoreException("The parameter is incorrect.");
+    }
 }
