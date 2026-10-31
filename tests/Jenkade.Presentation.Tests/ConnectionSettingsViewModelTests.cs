@@ -28,7 +28,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         var expected = new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna");
         Assert.Equal(expected, saved);
         var restarted = new ConnectionStore(settings.Folder, credentials);
-        Assert.Equal(expected, restarted.Load());
+        Assert.Equal(expected, restarted.Load().Connection);
         Assert.Equal(ApiToken, restarted.ApiToken());
     }
 
@@ -42,7 +42,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         await form.SaveCommand.ExecuteAsync(null);
 
         Assert.Null(form.Error);
-        Assert.Equal("", Connections().Load()?.DisplayName);
+        Assert.Equal("", Connections().Load().Connection?.DisplayName);
     }
 
     [Fact]
@@ -59,6 +59,21 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
     }
 
     [Fact]
+    public void Opens_empty_and_asks_for_an_API_token_when_the_settings_file_is_damaged()
+    {
+        SaveEarlierConnection();
+        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), "{}");
+
+        var form = EmptyForm();
+
+        Assert.Equal(("", "", "", ""), (form.DisplayName, form.Address, form.UserName, form.ApiToken));
+        Assert.Equal("", form.ApiTokenPlaceholder);
+        form.Address = "https://jenkins.example.com/";
+        form.UserName = "anna";
+        Assert.False(form.SaveCommand.CanExecute(null));
+    }
+
+    [Fact]
     public async Task Replaces_the_saved_Connection_and_its_API_token()
     {
         SaveEarlierConnection();
@@ -72,7 +87,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         Assert.Null(form.Error);
         Assert.Equal(("anna", ApiToken), Assert.Single(jenkins.Requests).BasicCredentials);
         var restarted = Connections();
-        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/ci/"), "anna"), restarted.Load());
+        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/ci/"), "anna"), restarted.Load().Connection);
         Assert.Equal(ApiToken, restarted.ApiToken());
     }
 
@@ -88,7 +103,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Null(form.Error);
         Assert.Equal(("anna", EarlierApiToken), Assert.Single(jenkins.Requests).BasicCredentials);
-        Assert.Equal("Company CI", Connections().Load()?.DisplayName);
+        Assert.Equal("Company CI", Connections().Load().Connection?.DisplayName);
         Assert.Equal(EarlierApiToken, Connections().ApiToken());
     }
 
@@ -106,7 +121,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.False(saved);
         Assert.Null(form.Error);
-        Assert.Null(Connections().Load());
+        Assert.Null(Connections().Load().Connection);
     }
 
     [Theory]
@@ -160,7 +175,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Equal(expectedError, form.Error);
         Assert.False(saved);
-        Assert.Equal("anna", Connections().Load()?.UserName);
+        Assert.Equal("anna", Connections().Load().Connection?.UserName);
         Assert.Equal(EarlierApiToken, Connections().ApiToken());
     }
 
@@ -178,7 +193,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Equal("This system has no credential store to keep the API token in, so the Connection can't be saved.", form.Error);
         Assert.False(saved);
-        Assert.Null(connections.Load());
+        Assert.Null(connections.Load().Connection);
     }
 
     [Theory]
@@ -195,7 +210,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Equal("Enter the full address, starting with https:// or http://.", form.Error);
         Assert.Empty(jenkins.Requests);
-        Assert.Null(Connections().Load());
+        Assert.Null(Connections().Load().Connection);
     }
 
     private ConnectionStore Connections() => new(settings.Folder, credentials);

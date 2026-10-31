@@ -35,6 +35,7 @@ public sealed class MainWindowViewModelTests : IDisposable
         var main = new MainWindowViewModel(dialogs, Connections());
 
         Assert.Null(main.Connection);
+        Assert.False(main.SavedConnectionUnreadable);
     }
 
     [Fact]
@@ -57,6 +58,30 @@ public sealed class MainWindowViewModelTests : IDisposable
         await main.ShowConnectionSettingsCommand.ExecuteAsync(null);
 
         Assert.Equal("Company Jenkins", main.ConnectionName);
+    }
+
+    [Fact]
+    public void Tells_the_user_to_set_up_the_Connection_again_when_its_settings_file_is_damaged()
+    {
+        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), "{\"address\":");
+
+        var main = new MainWindowViewModel(dialogs, Connections());
+
+        Assert.Null(main.Connection);
+        Assert.True(main.SavedConnectionUnreadable);
+    }
+
+    [Fact]
+    public async Task Stops_telling_about_the_damaged_settings_file_once_the_user_saves_a_Connection()
+    {
+        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), "{\"address\":");
+        var main = new MainWindowViewModel(dialogs, Connections());
+        dialogs.SavedConnection = new Connection("Home Jenkins", new Uri("http://raspberrypi:8080/"), "anna");
+
+        await main.ShowConnectionSettingsCommand.ExecuteAsync(null);
+
+        Assert.False(main.SavedConnectionUnreadable);
+        Assert.Equal("Home Jenkins", main.ConnectionName);
     }
 
     private ConnectionStore Connections() => new(settings.Folder, credentials);

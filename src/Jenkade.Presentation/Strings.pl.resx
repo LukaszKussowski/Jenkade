@@ -69,6 +69,9 @@
   <data name="NoConnection" xml:space="preserve">
     <value>Brak połączenia. Skonfiguruj je w menu Połączenie.</value>
   </data>
+  <data name="SavedConnectionUnreadable" xml:space="preserve">
+    <value>Nie udało się odczytać zapisanego połączenia. Skonfiguruj je ponownie w menu Połączenie.</value>
+  </data>
   <data name="ConnectionSettingsTitle" xml:space="preserve">
     <value>Ustawienia połączenia</value>
   </data>

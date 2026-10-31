@@ -17,9 +17,9 @@
     </Menu>
     <Border DockPanel.Dock="Left" Width="280" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
       <Panel Margin="16">
-        <TextBlock Text="{x:Static vm:Strings.NoConnection}" TextWrapping="Wrap"
+        <TextBlock Name="NoConnection" Text="{Binding NoConnectionMessage}" TextWrapping="Wrap"
                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                   IsVisible="{Binding Connection, Converter={x:Static ObjectConverters.IsNull}}" />
+                   IsVisible="{Binding NoConnectionMessage, Converter={x:Static ObjectConverters.IsNotNull}}" />
         <StackPanel Spacing="2" IsVisible="{Binding Connection, Converter={x:Static ObjectConverters.IsNotNull}}">
           <TextBlock Name="ConnectionName" Text="{Binding ConnectionName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
           <TextBlock DataContext="{Binding Connection}" x:DataType="core:Connection" Text="{Binding UserName}" FontSize="12"

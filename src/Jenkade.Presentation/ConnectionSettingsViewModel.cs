@@ -17,7 +17,7 @@ public sealed partial class ConnectionSettingsViewModel : ObservableObject
     public ConnectionSettingsViewModel(JenkinsClient jenkins, ConnectionStore connections)
     {
         (this.jenkins, this.connections) = (jenkins, connections);
-        if (connections.Load() is { } saved)
+        if (connections.Load().Connection is { } saved)
         {
             hasSavedConnection = true;
             (DisplayName, Address, UserName) = (saved.DisplayName, saved.Address.ToString(), saved.UserName);

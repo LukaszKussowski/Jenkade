@@ -13,13 +13,26 @@ public sealed class ConnectionStore(SettingsFolder folder, ICredentialStore cred
 
     private string SettingsFile => Path.Combine(folder.Path, "connection.json");
 
-    /// <summary>The saved Connection, or null before the user has set one up.</summary>
-    public Connection? Load()
+    /// <summary>
+    /// The saved Connection; none before the user has set one up, and none but <see cref="SavedConnection.Unreadable"/>
+    /// when <c>connection.json</c> can't be read or doesn't describe a Connection. Saving one replaces the file.
+    /// </summary>
+    public SavedConnection Load()
     {
         if (!File.Exists(SettingsFile))
-            return null;
-        using var stream = File.OpenRead(SettingsFile);
-        return JsonSerializer.Deserialize(stream, ConnectionJson.Default.Connection);
+            return new SavedConnection(null, Unreadable: false);
+        try
+        {
+            using var stream = File.OpenRead(SettingsFile);
+            // Read field by field: the deserializer leaves missing fields null instead of failing.
+            if (JsonSerializer.Deserialize(stream, ConnectionJson.Default.ConnectionFile) is { Address: { } address, UserName: { } userName } file
+                && Connection.TryParseAddress(address, out var parsedAddress) && !string.IsNullOrWhiteSpace(userName))
+                return new SavedConnection(new Connection(file.DisplayName ?? "", parsedAddress, userName), Unreadable: false);
+        }
+        catch (Exception exception) when (exception is JsonException or IOException or UnauthorizedAccessException)
+        {
+        }
+        return new SavedConnection(null, Unreadable: true);
     }
 
     /// <summary>Saves the Connection and its API token in place of the ones saved before.</summary>
@@ -31,7 +44,8 @@ public sealed class ConnectionStore(SettingsFolder folder, ICredentialStore cred
         Directory.CreateDirectory(folder.Path);
         var temporaryFile = SettingsFile + ".tmp";
         using (var stream = File.Create(temporaryFile))
-            JsonSerializer.Serialize(stream, connection, ConnectionJson.Default.Connection);
+            JsonSerializer.Serialize(stream, new ConnectionFile(connection.DisplayName, connection.Address.AbsoluteUri, connection.UserName),
+                ConnectionJson.Default.ConnectionFile);
         File.Move(temporaryFile, SettingsFile, overwrite: true);
     }
 
@@ -39,5 +53,11 @@ public sealed class ConnectionStore(SettingsFolder folder, ICredentialStore cred
 }
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = true)]
-[JsonSerializable(typeof(Connection))]
+[JsonSerializable(typeof(ConnectionFile))]
 internal sealed partial class ConnectionJson : JsonSerializerContext;
+
+/// <summary>The contents of <c>connection.json</c>, each field possibly missing.</summary>
+internal sealed record ConnectionFile(string? DisplayName, string? Address, string? UserName);
+
+/// <summary>What <see cref="ConnectionStore.Load"/> found: the Connection, or none and whether a damaged file is why.</summary>
+public sealed record SavedConnection(Connection? Connection, bool Unreadable);

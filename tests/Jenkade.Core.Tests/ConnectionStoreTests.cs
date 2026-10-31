@@ -17,8 +17,8 @@ public sealed class ConnectionStoreTests : IDisposable
 
         var restarted = new ConnectionStore(settings.Folder, credentials);
 
-        var connection = restarted.Load();
-        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), connection);
+        var saved = restarted.Load();
+        Assert.Equal(new SavedConnection(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), Unreadable: false), saved);
         Assert.Equal(ApiToken, restarted.ApiToken());
         var settingsFile = Assert.Single(Directory.GetFiles(settings.Folder.Path));
         Assert.Equal("connection.json", Path.GetFileName(settingsFile));
@@ -34,7 +34,7 @@ public sealed class ConnectionStoreTests : IDisposable
         connections.Save(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), "99f8e7d6c5b4a3928170f6e5d4c3b2a1f0");
 
         var restarted = new ConnectionStore(settings.Folder, credentials);
-        Assert.Equal(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), restarted.Load());
+        Assert.Equal(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), restarted.Load().Connection);
         Assert.Equal("99f8e7d6c5b4a3928170f6e5d4c3b2a1f0", restarted.ApiToken());
     }
 
@@ -43,7 +43,43 @@ public sealed class ConnectionStoreTests : IDisposable
     {
         var firstRun = new ConnectionStore(new SettingsFolder(Path.Combine(settings.Folder.Path, "Jenkade")), credentials);
 
-        Assert.Null(firstRun.Load());
+        Assert.Equal(new SavedConnection(null, Unreadable: false), firstRun.Load());
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("{\"address\": \"https://jenkins.example.com/\", \"userName\":")]
+    [InlineData("null")]
+    [InlineData("{}")]
+    [InlineData("{\"address\": \"jenkins.example.com\", \"userName\": \"anna\"}")]
+    [InlineData("{\"address\": \"ftp://jenkins.example.com/\", \"userName\": \"anna\"}")]
+    [InlineData("{\"address\": \"https://jenkins.example.com/\", \"userName\": \" \"}")]
+    [InlineData("{\"address\": \"https://jenkins.example.com/\"}")]
+    public void A_damaged_settings_file_is_unreadable_instead_of_a_Connection(string settingsFile)
+    {
+        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), settingsFile);
+
+        Assert.Equal(new SavedConnection(null, Unreadable: true), new ConnectionStore(settings.Folder, credentials).Load());
+    }
+
+    [Fact]
+    public void A_settings_file_another_program_holds_open_is_unreadable()
+    {
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "Only Windows locks files against reading.");
+        using var locked = new FileStream(Path.Combine(settings.Folder.Path, "connection.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+
+        Assert.Equal(new SavedConnection(null, Unreadable: true), new ConnectionStore(settings.Folder, credentials).Load());
+    }
+
+    [Fact]
+    public void A_settings_file_without_a_display_name_has_a_Connection_named_by_its_address()
+    {
+        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"),
+            "{\"address\": \"https://jenkins.example.com/ci\", \"userName\": \"anna\"}");
+
+        var saved = new ConnectionStore(settings.Folder, credentials).Load();
+
+        Assert.Equal(new Connection("", new Uri("https://jenkins.example.com/ci/"), "anna"), saved.Connection);
     }
 
     public void Dispose() => settings.Dispose();

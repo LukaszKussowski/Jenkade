@@ -17,6 +17,8 @@ public sealed class TestSeams : IDisposable
 
     public InMemoryCredentialStore Credentials { get; } = new();
 
+    public SettingsFolder Settings => settings.Folder;
+
     /// <param name="platformCredentialStore">Keeps the platform's own credential store instead of the in-memory one.</param>
     public IHost CreateHost(bool platformCredentialStore = false) => CompositionRoot.CreateHost(services =>
     {
