@@ -9,6 +9,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Jenkade.Presentation\Jenkade.Presentation.csproj" />
+    <ProjectReference Include="..\Jenkade.Testing\Jenkade.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\GLOSSARY.md" Link="GLOSSARY.md" CopyToOutputDirectory="PreserveNewest" />

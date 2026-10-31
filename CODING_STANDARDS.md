@@ -17,6 +17,7 @@ Types, members, test names and UI text use the terms in `GLOSSARY.md`; its _Avoi
 
 - Test at the highest seam: what the user sees, or what Jenkins receives.
 - Replace only the agreed seams: Jenkins over HTTP (a fake `HttpMessageHandler` serving recorded responses), the credential store, the settings folder and `TimeProvider`. Everything between them is real.
+- Presentation tests may stand in for the interfaces the App implements for ViewModels (`IDialogService`) with a plain stub returning what the user would have chosen; the windows behind them are covered by headless tests.
 - Assert on behaviour, not on private members, internal collections or call counts.
 - Expected values come from an independent source (a literal, the spec, MinVer), never recomputed the way the code computes them.
 - Headless UI tests assert there are no binding errors and save a screenshot (`docs/headless-testing.md`).
@@ -35,5 +36,7 @@ Polling and timeouts take the injected `TimeProvider` (e.g. `PeriodicTimer` on i
 - All warnings as errors, including trimming/AOT analyzers and Avalonia's XAML compiler (AVLN): `Directory.Build.props`.
 - Polish text only in `*.pl.resx` and `GLOSSARY.md`: `scripts/check-polish-text.py`.
 - Every UI string in both languages, none using a glossary _Avoid_ or "not …" term: `StringsTests`.
+- Every `{DynamicResource}` key in the views exists in the light and dark theme: `ThemeResourceTests`.
+- Windows-only adapters (the Credential Manager) run on the `windows-latest` CI job; elsewhere their tests are skipped.
 - All of the above in one run: `scripts/check.sh` (CI runs it too).
 - No Claude attribution in commits or PR descriptions: `.github/workflows/conventions.yml`.

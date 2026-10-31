@@ -5,6 +5,8 @@
     <RootNamespace>Jenkade.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Windows Credential Manager interop (WindowsCredentialManager). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" />
@@ -12,6 +14,9 @@
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Jenkade.App.Tests" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jenkade.Presentation\Jenkade.Presentation.csproj" />
