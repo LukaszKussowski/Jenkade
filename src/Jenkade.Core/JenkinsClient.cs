@@ -26,29 +26,29 @@ public sealed class JenkinsClient(HttpMessageHandler handler, TimeProvider time)
         }
         catch (OperationCanceledException) when (timeout.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
         {
-            return ConnectionVerification.Unreachable;
+            return new ConnectionVerification.Unreachable();
         }
         catch (HttpRequestException exception) when (exception.InnerException is AuthenticationException)
         {
             // Trust is the operating system's decision (no custom validation callback): there's no way to ignore it.
-            return ConnectionVerification.UntrustedCertificate;
+            return new ConnectionVerification.UntrustedCertificate();
         }
         catch (HttpRequestException)
         {
-            return ConnectionVerification.Unreachable;
+            return new ConnectionVerification.Unreachable();
         }
 
         using var _ = response;
         return response.StatusCode switch
         {
-            HttpStatusCode.Unauthorized => ConnectionVerification.InvalidCredentials,
-            HttpStatusCode.Forbidden => ConnectionVerification.NoPermission,
-            HttpStatusCode.NotFound => ConnectionVerification.NotJenkins,
-            >= HttpStatusCode.MultipleChoices and < HttpStatusCode.BadRequest => ConnectionVerification.Redirected,
-            _ when !response.IsSuccessStatusCode => ConnectionVerification.UnexpectedResponse,
+            HttpStatusCode.Unauthorized => new ConnectionVerification.InvalidCredentials(),
+            HttpStatusCode.Forbidden => new ConnectionVerification.NoPermission(),
+            HttpStatusCode.NotFound => new ConnectionVerification.NotJenkins(),
+            >= HttpStatusCode.MultipleChoices and < HttpStatusCode.BadRequest => new ConnectionVerification.Redirected(),
+            _ when !response.IsSuccessStatusCode => new ConnectionVerification.UnexpectedResponse(),
             // Every Jenkins response carries its version in X-Jenkins.
-            _ when !response.Headers.Contains("X-Jenkins") => ConnectionVerification.NotJenkins,
-            _ => ConnectionVerification.Verified,
+            _ when !response.Headers.Contains("X-Jenkins") => new ConnectionVerification.NotJenkins(),
+            _ => new ConnectionVerification.Verified(),
         };
     }
 

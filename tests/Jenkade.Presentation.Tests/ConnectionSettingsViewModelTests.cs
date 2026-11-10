@@ -28,7 +28,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         var expected = new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna");
         Assert.Equal(expected, saved);
         var restarted = new ConnectionStore(settings.Folder, credentials);
-        Assert.Equal(expected, restarted.Load().Connection);
+        Assert.Equal(expected, restarted.Load());
         Assert.Equal(ApiToken, restarted.ApiToken());
     }
 
@@ -42,7 +42,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         await form.SaveCommand.ExecuteAsync(null);
 
         Assert.Null(form.Error);
-        Assert.Equal("", Connections().Load().Connection?.DisplayName);
+        Assert.Equal("", Assert.IsType<Connection>(Connections().Load().Value).DisplayName);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
         Assert.Null(form.Error);
         Assert.Equal(("anna", ApiToken), Assert.Single(jenkins.Requests).BasicCredentials);
         var restarted = Connections();
-        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/ci/"), "anna"), restarted.Load().Connection);
+        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/ci/"), "anna"), restarted.Load());
         Assert.Equal(ApiToken, restarted.ApiToken());
     }
 
@@ -103,7 +103,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Null(form.Error);
         Assert.Equal(("anna", EarlierApiToken), Assert.Single(jenkins.Requests).BasicCredentials);
-        Assert.Equal("Company CI", Connections().Load().Connection?.DisplayName);
+        Assert.Equal("Company CI", Assert.IsType<Connection>(Connections().Load().Value).DisplayName);
         Assert.Equal(EarlierApiToken, Connections().ApiToken());
     }
 
@@ -121,7 +121,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.False(saved);
         Assert.Null(form.Error);
-        Assert.Null(Connections().Load().Connection);
+        Assert.Equal(new SavedConnection.None(), Connections().Load());
     }
 
     [Theory]
@@ -175,7 +175,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Equal(expectedError, form.Error);
         Assert.False(saved);
-        Assert.Equal("anna", Connections().Load().Connection?.UserName);
+        Assert.Equal("anna", Assert.IsType<Connection>(Connections().Load().Value).UserName);
         Assert.Equal(EarlierApiToken, Connections().ApiToken());
     }
 
@@ -193,7 +193,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Equal("This system has no credential store to keep the API token in, so the Connection can't be saved.", form.Error);
         Assert.False(saved);
-        Assert.Null(connections.Load().Connection);
+        Assert.Equal(new SavedConnection.None(), connections.Load());
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.StartsWith("The Connection couldn't be saved: ", form.Error);
         Assert.False(saved);
-        Assert.Equal("Company Jenkins", Connections().Load().Connection?.DisplayName);
+        Assert.Equal("Company Jenkins", Assert.IsType<Connection>(Connections().Load().Value).DisplayName);
         Assert.Equal(EarlierApiToken, Connections().ApiToken());
     }
 
@@ -260,7 +260,7 @@ public sealed class ConnectionSettingsViewModelTests : IDisposable
 
         Assert.Equal("Enter the full address, starting with https:// or http://.", form.Error);
         Assert.Empty(jenkins.Requests);
-        Assert.Null(Connections().Load().Connection);
+        Assert.Equal(new SavedConnection.None(), Connections().Load());
     }
 
     private ConnectionStore Connections() => new(settings.Folder, credentials);

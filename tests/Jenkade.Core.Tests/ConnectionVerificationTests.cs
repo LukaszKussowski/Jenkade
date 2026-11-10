@@ -15,7 +15,7 @@ public class ConnectionVerificationTests
 
         var verification = await Verify();
 
-        Assert.Equal(ConnectionVerification.Verified, verification);
+        Assert.IsType<ConnectionVerification.Verified>(verification);
         var request = Assert.Single(jenkins.Requests);
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal("https://jenkins.example.com/api/json", request.Uri.GetLeftPart(UriPartial.Path));
@@ -27,7 +27,7 @@ public class ConnectionVerificationTests
     {
         jenkins.Serve("api/json", "unauthorized.http");
 
-        Assert.Equal(ConnectionVerification.InvalidCredentials, await Verify());
+        Assert.IsType<ConnectionVerification.InvalidCredentials>(await Verify());
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class ConnectionVerificationTests
     {
         jenkins.Serve("api/json", "forbidden.http");
 
-        Assert.Equal(ConnectionVerification.NoPermission, await Verify());
+        Assert.IsType<ConnectionVerification.NoPermission>(await Verify());
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class ConnectionVerificationTests
     {
         jenkins.RefuseConnections();
 
-        Assert.Equal(ConnectionVerification.Unreachable, await Verify());
+        Assert.IsType<ConnectionVerification.Unreachable>(await Verify());
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ConnectionVerificationTests
     {
         jenkins.PresentUntrustedCertificate();
 
-        Assert.Equal(ConnectionVerification.UntrustedCertificate, await Verify());
+        Assert.IsType<ConnectionVerification.UntrustedCertificate>(await Verify());
     }
 
     [Theory]
@@ -61,7 +61,7 @@ public class ConnectionVerificationTests
     {
         jenkins.Serve("api/json", recording);
 
-        Assert.Equal(ConnectionVerification.NotJenkins, await Verify());
+        Assert.IsType<ConnectionVerification.NotJenkins>(await Verify());
     }
 
     // Following a redirect would drop the Authorization header and verify anonymous access instead.
@@ -70,7 +70,7 @@ public class ConnectionVerificationTests
     {
         jenkins.Serve("api/json", "redirect-to-https.http");
 
-        Assert.Equal(ConnectionVerification.Redirected, await Verify());
+        Assert.IsType<ConnectionVerification.Redirected>(await Verify());
         Assert.Single(jenkins.Requests);
     }
 
@@ -79,7 +79,7 @@ public class ConnectionVerificationTests
     {
         jenkins.Serve("api/json", "internal-server-error.http");
 
-        Assert.Equal(ConnectionVerification.UnexpectedResponse, await Verify());
+        Assert.IsType<ConnectionVerification.UnexpectedResponse>(await Verify());
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class ConnectionVerificationTests
         Assert.False(verification.IsCompleted);
         time.Advance(TimeSpan.FromSeconds(1));
 
-        Assert.Equal(ConnectionVerification.Unreachable, await verification);
+        Assert.IsType<ConnectionVerification.Unreachable>(await verification);
     }
 
     private Task<ConnectionVerification> Verify() =>

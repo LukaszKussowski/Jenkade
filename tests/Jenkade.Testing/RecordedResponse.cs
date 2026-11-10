@@ -10,7 +10,7 @@ namespace Jenkade.Testing;
 internal static class RecordedResponse
 {
     private static readonly HashSet<string> TransferHeaders =
-        new(["Content-Length", "Transfer-Encoding", "Content-Encoding"], StringComparer.OrdinalIgnoreCase);
+        [with(StringComparer.OrdinalIgnoreCase), "Content-Length", "Transfer-Encoding", "Content-Encoding"];
 
     public static HttpResponseMessage Load(string name)
     {

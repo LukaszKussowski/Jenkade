@@ -18,7 +18,7 @@ public sealed class ConnectionStoreTests : IDisposable
         var restarted = new ConnectionStore(settings.Folder, credentials);
 
         var saved = restarted.Load();
-        Assert.Equal(new SavedConnection(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), Unreadable: false), saved);
+        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), saved);
         Assert.Equal(ApiToken, restarted.ApiToken());
         var settingsFile = Assert.Single(Directory.GetFiles(settings.Folder.Path));
         Assert.Equal("connection.json", Path.GetFileName(settingsFile));
@@ -34,7 +34,7 @@ public sealed class ConnectionStoreTests : IDisposable
         connections.Save(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), "99f8e7d6c5b4a3928170f6e5d4c3b2a1f0");
 
         var restarted = new ConnectionStore(settings.Folder, credentials);
-        Assert.Equal(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), restarted.Load().Connection);
+        Assert.Equal(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), restarted.Load());
         Assert.Equal("99f8e7d6c5b4a3928170f6e5d4c3b2a1f0", restarted.ApiToken());
     }
 
@@ -45,12 +45,44 @@ public sealed class ConnectionStoreTests : IDisposable
         connections.Save(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), ApiToken);
         Directory.CreateDirectory(Path.Combine(settings.Folder.Path, "connection.json.tmp"));
 
-        Assert.Throws<ConnectionNotSavedException>(() =>
-            connections.Save(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), "99f8e7d6c5b4a3928170f6e5d4c3b2a1f0"));
+        var saving = connections.Save(new Connection("", new Uri("https://ci.example.org/"), "anna.k"), "99f8e7d6c5b4a3928170f6e5d4c3b2a1f0");
+
+        Assert.IsType<ConnectionSaving.SettingsFileNotWritten>(saving.Value);
 
         var restarted = new ConnectionStore(settings.Folder, credentials);
-        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), restarted.Load().Connection);
+        Assert.Equal(new Connection("Company Jenkins", new Uri("https://jenkins.example.com/"), "anna"), restarted.Load());
         Assert.Equal(ApiToken, restarted.ApiToken());
+    }
+
+    [Fact]
+    public void Reports_that_there_is_no_credential_store_instead_of_saving()
+    {
+        var connections = new ConnectionStore(settings.Folder, new UnavailableCredentialStore());
+
+        var saving = connections.Save(new Connection("", new Uri("https://jenkins.example.com/"), "anna"), ApiToken);
+
+        Assert.IsType<NoCredentialStore>(saving.Value);
+        Assert.Equal(new SavedConnection.None(), connections.Load());
+        Assert.IsType<NoCredentialStore>(connections.ApiToken().Value);
+    }
+
+    [Fact]
+    public void Reports_the_credential_store_s_reason_when_it_fails()
+    {
+        var connections = new ConnectionStore(settings.Folder, credentials);
+        credentials.Failing = true;
+
+        var saving = connections.Save(new Connection("", new Uri("https://jenkins.example.com/"), "anna"), ApiToken);
+
+        Assert.Equal(new CredentialStoreFailed("The parameter is incorrect."), saving.Value);
+        Assert.Equal(new CredentialStoreFailed("The parameter is incorrect."), connections.ApiToken().Value);
+        Assert.Equal(new SavedConnection.None(), connections.Load());
+    }
+
+    [Fact]
+    public void Has_no_API_token_before_one_is_saved()
+    {
+        Assert.IsType<SavedApiToken.None>(new ConnectionStore(settings.Folder, credentials).ApiToken().Value);
     }
 
     [Fact]
@@ -58,7 +90,7 @@ public sealed class ConnectionStoreTests : IDisposable
     {
         var firstRun = new ConnectionStore(new SettingsFolder(Path.Combine(settings.Folder.Path, "Jenkade")), credentials);
 
-        Assert.Equal(new SavedConnection(null, Unreadable: false), firstRun.Load());
+        Assert.Equal(new SavedConnection.None(), firstRun.Load());
     }
 
     [Theory]
@@ -74,7 +106,7 @@ public sealed class ConnectionStoreTests : IDisposable
     {
         File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), settingsFile);
 
-        Assert.Equal(new SavedConnection(null, Unreadable: true), new ConnectionStore(settings.Folder, credentials).Load());
+        Assert.Equal(new SavedConnection.Unreadable(), new ConnectionStore(settings.Folder, credentials).Load());
     }
 
     [Fact]
@@ -83,7 +115,7 @@ public sealed class ConnectionStoreTests : IDisposable
         Assert.SkipUnless(OperatingSystem.IsWindows(), "Only Windows locks files against reading.");
         using var locked = new FileStream(Path.Combine(settings.Folder.Path, "connection.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
-        Assert.Equal(new SavedConnection(null, Unreadable: true), new ConnectionStore(settings.Folder, credentials).Load());
+        Assert.Equal(new SavedConnection.Unreadable(), new ConnectionStore(settings.Folder, credentials).Load());
     }
 
     [Fact]
@@ -94,7 +126,7 @@ public sealed class ConnectionStoreTests : IDisposable
 
         var saved = new ConnectionStore(settings.Folder, credentials).Load();
 
-        Assert.Equal(new Connection("", new Uri("https://jenkins.example.com/ci/"), "anna"), saved.Connection);
+        Assert.Equal(new Connection("", new Uri("https://jenkins.example.com/ci/"), "anna"), saved);
     }
 
     public void Dispose() => settings.Dispose();

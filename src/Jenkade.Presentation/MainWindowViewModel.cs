@@ -11,7 +11,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(IDialogService dialogs, ConnectionStore connections)
     {
         this.dialogs = dialogs;
-        (Connection, SavedConnectionUnreadable) = connections.Load();
+        (Connection, SavedConnectionUnreadable) = Shown(connections.Load());
     }
 
     /// <summary>The one Connection (ADR 0005), or null before the user sets it up.</summary>
@@ -31,6 +31,13 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>What the main window says while there's no Connection, or null when there is one.</summary>
     public string? NoConnectionMessage =>
         Connection is not null ? null : SavedConnectionUnreadable ? Strings.SavedConnectionUnreadable : Strings.NoConnection;
+
+    private static (Connection? Connection, bool Unreadable) Shown(SavedConnection saved) => saved switch
+    {
+        Connection connection => (connection, false),
+        SavedConnection.None => (null, false),
+        SavedConnection.Unreadable => (null, true),
+    };
 
     [RelayCommand]
     private async Task ShowConnectionSettingsAsync()
