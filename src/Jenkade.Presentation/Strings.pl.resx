@@ -70,7 +70,19 @@
     <value>Brak połączenia. Skonfiguruj je w menu Połączenie.</value>
   </data>
   <data name="SavedConnectionUnreadable" xml:space="preserve">
-    <value>Nie udało się odczytać zapisanego połączenia. Skonfiguruj je ponownie w menu Połączenie.</value>
+    <value>Nie udało się odczytać zapisanego połączenia: {0} Skonfiguruj je ponownie w menu Połączenie. Plik: {1}</value>
+  </data>
+  <data name="SettingsFileMissingUserName" xml:space="preserve">
+    <value>brak w nim nazwy użytkownika.</value>
+  </data>
+  <data name="SettingsFileInvalidAddress" xml:space="preserve">
+    <value>jego adres „{0}” nie zaczyna się od https:// ani http://.</value>
+  </data>
+  <data name="SettingsFileMissingAddress" xml:space="preserve">
+    <value>brak w nim adresu.</value>
+  </data>
+  <data name="SettingsFileInvalidJson" xml:space="preserve">
+    <value>plik jest uszkodzony (wiersz {0}).</value>
   </data>
   <data name="ConnectionSettingsTitle" xml:space="preserve">
     <value>Ustawienia połączenia</value>

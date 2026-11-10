@@ -70,7 +70,19 @@
     <value>No Connection yet. Set it up from the Connection menu.</value>
   </data>
   <data name="SavedConnectionUnreadable" xml:space="preserve">
-    <value>The saved Connection couldn't be read. Set it up again from the Connection menu.</value>
+    <value>The saved Connection couldn't be read: {0} Set it up again from the Connection menu. File: {1}</value>
+  </data>
+  <data name="SettingsFileMissingUserName" xml:space="preserve">
+    <value>it has no user name.</value>
+  </data>
+  <data name="SettingsFileInvalidAddress" xml:space="preserve">
+    <value>its address "{0}" doesn't start with https:// or http://.</value>
+  </data>
+  <data name="SettingsFileMissingAddress" xml:space="preserve">
+    <value>it has no address.</value>
+  </data>
+  <data name="SettingsFileInvalidJson" xml:space="preserve">
+    <value>the file is damaged (line {0}).</value>
   </data>
   <data name="ConnectionSettingsTitle" xml:space="preserve">
     <value>Connection settings</value>

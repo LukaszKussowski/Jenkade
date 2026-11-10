@@ -25,16 +25,32 @@ public sealed class ConnectionStore(SettingsFolder folder, ICredentialStore cred
         try
         {
             using var stream = File.OpenRead(SettingsFile);
-            // Read field by field: the deserializer leaves missing fields null instead of failing.
-            if (JsonSerializer.Deserialize(stream, ConnectionJson.Default.ConnectionFile) is { Address: { } address, UserName: { } userName } file
-                && Connection.TryParseAddress(address, out var parsedAddress) && !string.IsNullOrWhiteSpace(userName))
-                return new Connection(file.DisplayName ?? "", parsedAddress, userName);
+            return Read(JsonSerializer.Deserialize(stream, ConnectionJson.Default.ConnectionFile));
         }
-        catch (Exception exception) when (exception is JsonException or IOException or UnauthorizedAccessException)
+        catch (JsonException exception)
         {
+            // LineNumber counts from 0, and is missing when the file is empty.
+            return Unreadable(new SettingsFileFault.InvalidJson((exception.LineNumber ?? 0) + 1));
         }
-        return new SavedConnection.Unreadable();
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Unreadable(new SettingsFileFault.CannotOpen(exception.Message));
+        }
     }
+
+    // Field by field: the deserializer leaves missing fields null instead of failing.
+    private SavedConnection Read(ConnectionFile? file)
+    {
+        if (string.IsNullOrWhiteSpace(file?.Address))
+            return Unreadable(new SettingsFileFault.MissingAddress());
+        if (!Connection.TryParseAddress(file.Address, out var address))
+            return Unreadable(new SettingsFileFault.InvalidAddress(file.Address));
+        if (string.IsNullOrWhiteSpace(file.UserName))
+            return Unreadable(new SettingsFileFault.MissingUserName());
+        return new Connection(file.DisplayName ?? "", address, file.UserName);
+    }
+
+    private SavedConnection.Unreadable Unreadable(SettingsFileFault fault) => new(SettingsFile, fault);
 
     /// <summary>
     /// Saves the Connection and its API token in place of the ones saved before; when that fails, the ones saved before
@@ -107,8 +123,25 @@ public union SavedConnection(Connection, SavedConnection.None, SavedConnection.U
     /// <summary>The user hasn't set up a Connection yet.</summary>
     public sealed record None;
 
-    /// <summary><c>connection.json</c> is damaged or can't be read: the user sets the Connection up again.</summary>
-    public sealed record Unreadable;
+    /// <summary>The settings file can't be read as a Connection: the user sets the Connection up again.</summary>
+    public sealed record Unreadable(string File, SettingsFileFault Fault);
+}
+
+/// <summary>Why <c>connection.json</c> can't be read as a Connection.</summary>
+public closed record SettingsFileFault
+{
+    /// <summary>The file can't be opened, e.g. another program holds it or permissions forbid it.</summary>
+    public sealed record CannotOpen(string SystemReason) : SettingsFileFault;
+
+    /// <summary>The file isn't valid JSON from <see cref="Line"/> (counted from 1) on, e.g. it was cut short.</summary>
+    public sealed record InvalidJson(long Line) : SettingsFileFault;
+
+    public sealed record MissingAddress : SettingsFileFault;
+
+    /// <summary>The address isn't an absolute http or https address.</summary>
+    public sealed record InvalidAddress(string Address) : SettingsFileFault;
+
+    public sealed record MissingUserName : SettingsFileFault;
 }
 
 /// <summary>What <see cref="ConnectionStore.Save"/> did.</summary>

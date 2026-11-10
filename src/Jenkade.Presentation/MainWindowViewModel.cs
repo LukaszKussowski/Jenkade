@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Jenkade.Core;
@@ -11,7 +12,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(IDialogService dialogs, ConnectionStore connections)
     {
         this.dialogs = dialogs;
-        (Connection, SavedConnectionUnreadable) = Shown(connections.Load());
+        (Connection, UnreadableSettingsFile) = Shown(connections.Load());
     }
 
     /// <summary>The one Connection (ADR 0005), or null before the user sets it up.</summary>
@@ -19,10 +20,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ConnectionName), nameof(NoConnectionMessage))]
     public partial Connection? Connection { get; private set; }
 
-    /// <summary>The settings file was damaged: the user sets the Connection up again.</summary>
+    /// <summary>The settings file that couldn't be read, and why: the user sets the Connection up again.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NoConnectionMessage))]
-    public partial bool SavedConnectionUnreadable { get; private set; }
+    private partial SavedConnection.Unreadable? UnreadableSettingsFile { get; set; }
 
     /// <summary>The Connection's display name, or its address when it has none.</summary>
     public string? ConnectionName =>
@@ -30,20 +31,33 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     /// <summary>What the main window says while there's no Connection, or null when there is one.</summary>
     public string? NoConnectionMessage =>
-        Connection is not null ? null : SavedConnectionUnreadable ? Strings.SavedConnectionUnreadable : Strings.NoConnection;
+        Connection is not null ? null
+        : UnreadableSettingsFile is { } unreadable ? Format(Strings.SavedConnectionUnreadable, Explain(unreadable.Fault), unreadable.File)
+        : Strings.NoConnection;
 
-    private static (Connection? Connection, bool Unreadable) Shown(SavedConnection saved) => saved switch
+    private static (Connection? Connection, SavedConnection.Unreadable? Unreadable) Shown(SavedConnection saved) => saved switch
     {
-        Connection connection => (connection, false),
-        SavedConnection.None => (null, false),
-        SavedConnection.Unreadable => (null, true),
+        Connection connection => (connection, null),
+        SavedConnection.None => (null, null),
+        SavedConnection.Unreadable unreadable => (null, unreadable),
     };
+
+    private static string Explain(SettingsFileFault fault) => fault switch
+    {
+        SettingsFileFault.CannotOpen cannotOpen => cannotOpen.SystemReason,
+        SettingsFileFault.InvalidJson invalidJson => Format(Strings.SettingsFileInvalidJson, invalidJson.Line),
+        SettingsFileFault.MissingAddress => Strings.SettingsFileMissingAddress,
+        SettingsFileFault.InvalidAddress invalidAddress => Format(Strings.SettingsFileInvalidAddress, invalidAddress.Address),
+        SettingsFileFault.MissingUserName => Strings.SettingsFileMissingUserName,
+    };
+
+    private static string Format(string format, params object[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     [RelayCommand]
     private async Task ShowConnectionSettingsAsync()
     {
         if (await dialogs.ShowConnectionSettingsAsync() is { } saved)
-            (Connection, SavedConnectionUnreadable) = (saved, false);
+            (Connection, UnreadableSettingsFile) = (saved, null);
     }
 
     [RelayCommand]

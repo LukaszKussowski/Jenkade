@@ -93,29 +93,44 @@ public sealed class ConnectionStoreTests : IDisposable
         Assert.Equal(new SavedConnection.None(), firstRun.Load());
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData("{\"address\": \"https://jenkins.example.com/\", \"userName\":")]
-    [InlineData("null")]
-    [InlineData("{}")]
-    [InlineData("{\"address\": \"jenkins.example.com\", \"userName\": \"anna\"}")]
-    [InlineData("{\"address\": \"ftp://jenkins.example.com/\", \"userName\": \"anna\"}")]
-    [InlineData("{\"address\": \"https://jenkins.example.com/\", \"userName\": \" \"}")]
-    [InlineData("{\"address\": \"https://jenkins.example.com/\"}")]
-    public void A_damaged_settings_file_is_unreadable_instead_of_a_Connection(string settingsFile)
+    public static TheoryData<string, SettingsFileFault> DamagedSettingsFiles => new()
     {
-        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), settingsFile);
+        { "", new SettingsFileFault.InvalidJson(Line: 1) },
+        { "{\"address\": \"https://jenkins.example.com/\", \"userName\":", new SettingsFileFault.InvalidJson(Line: 1) },
+        { "{\n  \"address\": \"https://jenkins.example.com/\",\n  \"userName\" \"anna\"\n}", new SettingsFileFault.InvalidJson(Line: 3) },
+        { "null", new SettingsFileFault.MissingAddress() },
+        { "{}", new SettingsFileFault.MissingAddress() },
+        { "{\"address\": \" \", \"userName\": \"anna\"}", new SettingsFileFault.MissingAddress() },
+        { "{\"address\": \"jenkins.example.com\", \"userName\": \"anna\"}", new SettingsFileFault.InvalidAddress("jenkins.example.com") },
+        { "{\"address\": \"ftp://jenkins.example.com/\", \"userName\": \"anna\"}", new SettingsFileFault.InvalidAddress("ftp://jenkins.example.com/") },
+        { "{\"address\": \"https://jenkins.example.com/\", \"userName\": \" \"}", new SettingsFileFault.MissingUserName() },
+        { "{\"address\": \"https://jenkins.example.com/\"}", new SettingsFileFault.MissingUserName() },
+    };
 
-        Assert.Equal(new SavedConnection.Unreadable(), new ConnectionStore(settings.Folder, credentials).Load());
+    [Theory]
+    [MemberData(nameof(DamagedSettingsFiles))]
+    public void A_damaged_settings_file_is_unreadable_and_says_why(string settingsFile, SettingsFileFault fault)
+    {
+        File.WriteAllText(SettingsFile, settingsFile);
+
+        Assert.Equal(new SavedConnection.Unreadable(SettingsFile, fault), new ConnectionStore(settings.Folder, credentials).Load());
     }
 
     [Fact]
-    public void A_settings_file_another_program_holds_open_is_unreadable()
+    public void A_settings_file_that_cannot_be_opened_is_unreadable_with_the_system_s_reason()
     {
-        Assert.SkipUnless(OperatingSystem.IsWindows(), "Only Windows locks files against reading.");
-        using var locked = new FileStream(Path.Combine(settings.Folder.Path, "connection.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+        File.WriteAllText(SettingsFile, "{}");
+        using var locked = OperatingSystem.IsWindows()
+            ? new FileStream(SettingsFile, FileMode.Open, FileAccess.Write, FileShare.None)
+            : null;
+        if (!OperatingSystem.IsWindows())
+            File.SetUnixFileMode(SettingsFile, UnixFileMode.None);
 
-        Assert.Equal(new SavedConnection.Unreadable(), new ConnectionStore(settings.Folder, credentials).Load());
+        var unreadable = Assert.IsType<SavedConnection.Unreadable>(new ConnectionStore(settings.Folder, credentials).Load().Value);
+
+        Assert.Equal(SettingsFile, unreadable.File);
+        var cannotOpen = Assert.IsType<SettingsFileFault.CannotOpen>(unreadable.Fault);
+        Assert.Contains("connection.json", cannotOpen.SystemReason);
     }
 
     [Fact]
@@ -128,6 +143,8 @@ public sealed class ConnectionStoreTests : IDisposable
 
         Assert.Equal(new Connection("", new Uri("https://jenkins.example.com/ci/"), "anna"), saved);
     }
+
+    private string SettingsFile => Path.Combine(settings.Folder.Path, "connection.json");
 
     public void Dispose() => settings.Dispose();
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Jenkade.Core;
 using Jenkade.Testing;
 
@@ -5,6 +6,8 @@ namespace Jenkade.Presentation.Tests;
 
 public sealed class MainWindowViewModelTests : IDisposable
 {
+    public MainWindowViewModelTests() => CultureInfo.CurrentUICulture = UiLanguage.English;
+
     private readonly TemporarySettingsFolder settings = new();
     private readonly InMemoryCredentialStore credentials = new();
     private readonly Dialogs dialogs = new();
@@ -35,7 +38,7 @@ public sealed class MainWindowViewModelTests : IDisposable
         var main = new MainWindowViewModel(dialogs, Connections());
 
         Assert.Null(main.Connection);
-        Assert.False(main.SavedConnectionUnreadable);
+        Assert.Equal("No Connection yet. Set it up from the Connection menu.", main.NoConnectionMessage);
     }
 
     [Fact]
@@ -60,15 +63,21 @@ public sealed class MainWindowViewModelTests : IDisposable
         Assert.Equal("Company Jenkins", main.ConnectionName);
     }
 
-    [Fact]
-    public void Tells_the_user_to_set_up_the_Connection_again_when_its_settings_file_is_damaged()
+    [Theory]
+    [InlineData("{\n  \"address\": \"https://jenkins.example.com/\",\n  \"userName\" \"anna\"\n}", "the file is damaged (line 3).")]
+    [InlineData("{\"userName\": \"anna\"}", "it has no address.")]
+    [InlineData("{\"address\": \"jenkins.example.com\", \"userName\": \"anna\"}",
+        "its address \"jenkins.example.com\" doesn't start with https:// or http://.")]
+    [InlineData("{\"address\": \"https://jenkins.example.com/\"}", "it has no user name.")]
+    public void Tells_why_the_settings_file_is_unreadable_and_where_it_is(string settingsFile, string why)
     {
-        File.WriteAllText(Path.Combine(settings.Folder.Path, "connection.json"), "{\"address\":");
+        var file = Path.Combine(settings.Folder.Path, "connection.json");
+        File.WriteAllText(file, settingsFile);
 
         var main = new MainWindowViewModel(dialogs, Connections());
 
         Assert.Null(main.Connection);
-        Assert.True(main.SavedConnectionUnreadable);
+        Assert.Equal($"The saved Connection couldn't be read: {why} Set it up again from the Connection menu. File: {file}", main.NoConnectionMessage);
     }
 
     [Fact]
@@ -80,7 +89,7 @@ public sealed class MainWindowViewModelTests : IDisposable
 
         await main.ShowConnectionSettingsCommand.ExecuteAsync(null);
 
-        Assert.False(main.SavedConnectionUnreadable);
+        Assert.Null(main.NoConnectionMessage);
         Assert.Equal("Home Jenkins", main.ConnectionName);
     }
 
