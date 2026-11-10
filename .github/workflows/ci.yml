@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: screenshots
-          path: tests/Jenkade.App.Tests/bin/Release/net10.0/screenshots/
+          path: tests/Jenkade.App.Tests/bin/Release/net11.0/screenshots/
           if-no-files-found: ignore
 
   # Runs what only Windows can: the Windows Credential Manager tests, skipped on Linux. Polish-text placement is
