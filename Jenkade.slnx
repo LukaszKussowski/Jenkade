@@ -8,5 +8,6 @@
     <Project Path="tests/Jenkade.App.Tests/Jenkade.App.Tests.csproj" />
     <Project Path="tests/Jenkade.Core.Tests/Jenkade.Core.Tests.csproj" />
     <Project Path="tests/Jenkade.Presentation.Tests/Jenkade.Presentation.Tests.csproj" />
+    <Project Path="tests/Jenkade.Testing/Jenkade.Testing.csproj" />
   </Folder>
 </Solution>

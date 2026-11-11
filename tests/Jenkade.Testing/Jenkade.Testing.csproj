@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Test seams shared by every test level: the fake Jenkins, the in-memory credential store, a temporary settings folder. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsAotCompatible>false</IsAotCompatible>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Recordings\*.http" LogicalName="Recordings/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Jenkade.Core\Jenkade.Core.csproj" />
+  </ItemGroup>
+</Project>

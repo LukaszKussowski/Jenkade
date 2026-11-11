@@ -13,7 +13,7 @@ ALLOWED = re.compile(r"(^|/)(GLOSSARY\.md|[^/]+\.pl\.resx)$")
 # Polish diacritics, lower and upper case, escaped so this file passes its own check.
 POLISH = re.compile("[\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017a\u017c\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b]")
 
-files = subprocess.run(["git", "ls-files", "-z"], capture_output=True, check=True, text=True).stdout.split("\0")
+files = subprocess.run(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], capture_output=True, check=True, text=True).stdout.split("\0")
 found = []
 for path in filter(None, files):
     if ALLOWED.search(path):

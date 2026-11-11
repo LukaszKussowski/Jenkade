@@ -39,4 +39,85 @@
   <data name="DurationHoursMinutes" xml:space="preserve">
     <value>{0} godz. {1} min</value>
   </data>
+  <data name="VerificationInvalidCredentials" xml:space="preserve">
+    <value>Jenkins odrzucił nazwę użytkownika lub token API.</value>
+  </data>
+  <data name="VerificationNoPermission" xml:space="preserve">
+    <value>Użytkownik nie ma uprawnień do odczytu Jenkinsa (Overall/Read).</value>
+  </data>
+  <data name="VerificationUnreachable" xml:space="preserve">
+    <value>Pod tym adresem nic nie odpowiada. Sprawdź adres i dostęp do sieci.</value>
+  </data>
+  <data name="VerificationUntrustedCertificate" xml:space="preserve">
+    <value>System operacyjny nie ufa certyfikatowi tego adresu. Dodaj jego urząd certyfikacji do magazynu certyfikatów systemu.</value>
+  </data>
+  <data name="VerificationNotJenkins" xml:space="preserve">
+    <value>Pod tym adresem nie ma Jenkinsa.</value>
+  </data>
+  <data name="VerificationUnexpectedResponse" xml:space="preserve">
+    <value>Jenkins odpowiedział błędem. Spróbuj ponownie później.</value>
+  </data>
+  <data name="InvalidAddress" xml:space="preserve">
+    <value>Podaj pełny adres zaczynający się od https:// lub http://.</value>
+  </data>
+  <data name="MenuConnection" xml:space="preserve">
+    <value>_Połączenie</value>
+  </data>
+  <data name="MenuConnectionSettings" xml:space="preserve">
+    <value>_Ustawienia połączenia…</value>
+  </data>
+  <data name="NoConnection" xml:space="preserve">
+    <value>Brak połączenia. Skonfiguruj je w menu Połączenie.</value>
+  </data>
+  <data name="SavedConnectionUnreadable" xml:space="preserve">
+    <value>Nie udało się odczytać zapisanego połączenia: {0} Skonfiguruj je ponownie w menu Połączenie. Plik: {1}</value>
+  </data>
+  <data name="SettingsFileMissingUserName" xml:space="preserve">
+    <value>brak w nim nazwy użytkownika.</value>
+  </data>
+  <data name="SettingsFileInvalidAddress" xml:space="preserve">
+    <value>jego adres „{0}” nie zaczyna się od https:// ani http://.</value>
+  </data>
+  <data name="SettingsFileMissingAddress" xml:space="preserve">
+    <value>brak w nim adresu.</value>
+  </data>
+  <data name="SettingsFileInvalidJson" xml:space="preserve">
+    <value>plik jest uszkodzony (wiersz {0}).</value>
+  </data>
+  <data name="ConnectionSettingsTitle" xml:space="preserve">
+    <value>Ustawienia połączenia</value>
+  </data>
+  <data name="ConnectionDisplayName" xml:space="preserve">
+    <value>Nazwa wyświetlana (opcjonalnie)</value>
+  </data>
+  <data name="ConnectionAddress" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+  <data name="ConnectionUserName" xml:space="preserve">
+    <value>Nazwa użytkownika</value>
+  </data>
+  <data name="ConnectionApiToken" xml:space="preserve">
+    <value>Token API</value>
+  </data>
+  <data name="Verifying" xml:space="preserve">
+    <value>Weryfikowanie…</value>
+  </data>
+  <data name="VerifyAndSave" xml:space="preserve">
+    <value>Zweryfikuj i zapisz</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="VerificationRedirected" xml:space="preserve">
+    <value>Ten adres przekierowuje gdzie indziej. Podaj adres, pod którym działa Jenkins, np. z https://.</value>
+  </data>
+  <data name="NoCredentialStore" xml:space="preserve">
+    <value>W tym systemie nie ma magazynu poświadczeń, w którym można przechować token API, więc nie da się zapisać połączenia.</value>
+  </data>
+  <data name="ConnectionNotSaved" xml:space="preserve">
+    <value>Nie udało się zapisać połączenia: {0}</value>
+  </data>
+  <data name="KeepSavedApiToken" xml:space="preserve">
+    <value>Zostaw puste, aby zachować zapisany token</value>
+  </data>
 </root>

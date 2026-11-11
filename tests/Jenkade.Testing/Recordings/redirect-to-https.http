@@ -1,0 +1,8 @@
+HTTP/1.1 301 Moved Permanently
+Date: Thu, 22 Oct 2026 12:09:30 GMT
+Server: nginx
+Location: https://jenkins.example.com/api/json?tree=mode
+Content-Type: text/html
+Content-Length: 162
+
+<html><head><title>301 Moved Permanently</title></head><body><center><h1>301 Moved Permanently</h1></center><hr><center>nginx</center></body></html>
